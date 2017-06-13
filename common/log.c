@@ -33,11 +33,6 @@
 #include "backtrace.h"
 
 static int glib_debug_level = INT_MAX;
-static int abort_mask = 0;
-
-#ifndef SPICE_ABORT_MASK_DEFAULT
-#define SPICE_ABORT_MASK_DEFAULT (G_LOG_LEVEL_CRITICAL|G_LOG_LEVEL_ERROR)
-#endif
 
 #define G_LOG_DOMAIN "Spice"
 
@@ -101,29 +96,6 @@ static void spice_log_set_debug_level(void)
     }
 }
 
-static void spice_log_set_abort_level(void)
-{
-    if (abort_mask == 0) {
-        const char *abort_str = g_getenv("SPICE_ABORT_LEVEL");
-        if (abort_str != NULL) {
-            GLogLevelFlags glib_abort_level;
-
-            /* FIXME: To be removed after enough deprecation time */
-            g_warning("Setting SPICE_ABORT_LEVEL is deprecated, use G_DEBUG instead");
-            glib_abort_level = spice_log_level_to_glib(atoi(abort_str));
-            unsigned int fatal_mask = G_LOG_FATAL_MASK;
-            while (glib_abort_level >= G_LOG_LEVEL_ERROR) {
-                fatal_mask |= glib_abort_level;
-                glib_abort_level >>= 1;
-            }
-            abort_mask = fatal_mask;
-            g_log_set_fatal_mask(G_LOG_DOMAIN, fatal_mask);
-        } else {
-            abort_mask = SPICE_ABORT_MASK_DEFAULT;
-        }
-    }
-}
-
 static void spice_logger(const gchar *log_domain,
                          GLogLevelFlags log_level,
                          const gchar *message,
@@ -139,7 +111,6 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 {
 
     spice_log_set_debug_level();
-    spice_log_set_abort_level();
     if (glib_debug_level != INT_MAX) {
         /* If SPICE_DEBUG_LEVEL is set, we need a custom handler, which is
          * going to break use of g_log_set_default_handler() by apps
@@ -182,7 +153,7 @@ static void spice_logv(const char *log_domain,
     g_log(log_domain, log_level, "%s", log_msg->str);
     g_string_free(log_msg, TRUE);
 
-    if ((abort_mask & log_level) != 0) {
+    if ((log_level & G_LOG_LEVEL_CRITICAL) != 0) {
         spice_backtrace();
         abort();
     }

@@ -44,37 +44,6 @@ LOG_OTHER_HELPER(warning, WARNING)
 LOG_OTHER_HELPER(critical, CRITICAL)
 
 #if GLIB_CHECK_VERSION(2,38,0)
-/* Checks that spice_warning() aborts after changing SPICE_ABORT_LEVEL */
-static void test_spice_abort_level(void)
-{
-    if (g_test_subprocess()) {
-        spice_warning("spice_warning");
-        return;
-    }
-    /* 2 = SPICE_LOG_LEVEL_WARNING  */
-    g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
-    g_test_trap_subprocess(NULL, 0, 0);
-    g_unsetenv("SPICE_ABORT_LEVEL");
-    g_test_trap_assert_failed();
-    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
-    g_test_trap_assert_stderr("*spice_warning*");
-}
-
-/* Checks that g_warning() aborts after changing SPICE_ABORT_LEVEL */
-static void test_spice_abort_level_g_warning(void)
-{
-    if (g_test_subprocess()) {
-        g_warning("g_warning");
-        return;
-    }
-    g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
-    g_test_trap_subprocess(NULL, 0, 0);
-    g_unsetenv("SPICE_ABORT_LEVEL");
-    g_test_trap_assert_failed();
-    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
-    g_test_trap_assert_stderr("*g_warning*");
-}
-
 /* Checks that spice_warning() aborts after setting G_DEBUG=fatal-warnings */
 static void test_spice_fatal_warning(void)
 {
@@ -283,7 +252,6 @@ static void test_spice_debug_level_warning(void)
         spice_info("spice_info");
         spice_debug("spice_debug");
         spice_warning("spice_warning");
-        spice_critical("spice_critical");
         g_debug("g_debug");
         g_info("g_info");
         g_message("g_message");
@@ -298,15 +266,12 @@ static void test_spice_debug_level_warning(void)
         return;
     }
 
-    g_setenv("SPICE_ABORT_LEVEL", "0", TRUE);
     g_setenv("SPICE_DEBUG_LEVEL", "1", TRUE);
     g_test_trap_subprocess(NULL, 0, 0);
-    g_unsetenv("SPICE_ABORT_LEVEL");
     g_unsetenv("SPICE_DEBUG_LEVEL");
     g_test_trap_assert_passed();
     g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
-    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
-    g_test_trap_assert_stderr("*spice_critical\n*g_critical\n*other_message\n*other_warning\n*other_critical\n");
+    g_test_trap_assert_stderr("*g_critical\n*other_message\n*other_warning\n*other_critical\n");
     g_test_trap_assert_stdout_unmatched("*spice_info*");
     g_test_trap_assert_stdout_unmatched("*spice_debug*");
     g_test_trap_assert_stderr_unmatched("*spice_warning*");
@@ -393,8 +358,6 @@ int main(int argc, char **argv)
     g_log_set_always_fatal(fatal_mask & G_LOG_LEVEL_MASK);
 
 #if GLIB_CHECK_VERSION(2,38,0)
-    g_test_add_func("/spice-common/spice-abort-level", test_spice_abort_level);
-    g_test_add_func("/spice-common/spice-abort-level-gwarning", test_spice_abort_level_g_warning);
     g_test_add_func("/spice-common/spice-debug-level", test_spice_debug_level);
     g_test_add_func("/spice-common/spice-debug-level-warning", test_spice_debug_level_warning);
     g_test_add_func("/spice-common/spice-g-messages-debug", test_spice_g_messages_debug);
