@@ -32,93 +32,10 @@
 #include "log.h"
 #include "backtrace.h"
 
-static int glib_debug_level = INT_MAX;
-
 #define G_LOG_DOMAIN "Spice"
-
-typedef enum {
-    SPICE_LOG_LEVEL_ERROR,
-    SPICE_LOG_LEVEL_CRITICAL,
-    SPICE_LOG_LEVEL_WARNING,
-    SPICE_LOG_LEVEL_INFO,
-    SPICE_LOG_LEVEL_DEBUG,
-} SpiceLogLevel;
-
-static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
-{
-    static const GLogLevelFlags glib_levels[] = {
-        [ SPICE_LOG_LEVEL_ERROR ] = G_LOG_LEVEL_ERROR,
-        [ SPICE_LOG_LEVEL_CRITICAL ] = G_LOG_LEVEL_CRITICAL,
-        [ SPICE_LOG_LEVEL_WARNING ] = G_LOG_LEVEL_WARNING,
-        [ SPICE_LOG_LEVEL_INFO ] = G_LOG_LEVEL_INFO,
-        [ SPICE_LOG_LEVEL_DEBUG ] = G_LOG_LEVEL_DEBUG,
-    };
-    g_return_val_if_fail (level >= 0, G_LOG_LEVEL_ERROR);
-    g_return_val_if_fail (level < G_N_ELEMENTS(glib_levels), G_LOG_LEVEL_DEBUG);
-
-    return glib_levels[level];
-}
-
-static void spice_log_set_debug_level(void)
-{
-    if (glib_debug_level == INT_MAX) {
-        const char *debug_str = g_getenv("SPICE_DEBUG_LEVEL");
-        if (debug_str != NULL) {
-            int debug_level;
-            char *debug_env;
-
-            /* FIXME: To be removed after enough deprecation time */
-            g_warning("Setting SPICE_DEBUG_LEVEL is deprecated, use G_MESSAGES_DEBUG instead");
-            debug_level = atoi(debug_str);
-            if (debug_level > SPICE_LOG_LEVEL_DEBUG) {
-                debug_level = SPICE_LOG_LEVEL_DEBUG;
-            }
-            glib_debug_level = spice_log_level_to_glib(debug_level);
-
-            /* If the debug level is too high, make sure we don't try to enable
-             * display of glib debug logs */
-            if (debug_level < SPICE_LOG_LEVEL_INFO)
-                return;
-
-            /* Make sure GLib default log handler will show the debug messages. Messing with
-             * environment variables like this is ugly, but this only happens when the legacy
-             * SPICE_DEBUG_LEVEL is used
-             */
-            debug_env = (char *)g_getenv("G_MESSAGES_DEBUG");
-            if (debug_env == NULL) {
-                g_setenv("G_MESSAGES_DEBUG", G_LOG_DOMAIN, FALSE);
-            } else {
-                debug_env = g_strconcat(debug_env, " ", G_LOG_DOMAIN, NULL);
-                g_setenv("G_MESSAGES_DEBUG", G_LOG_DOMAIN, FALSE);
-                g_free(debug_env);
-            }
-        }
-    }
-}
-
-static void spice_logger(const gchar *log_domain,
-                         GLogLevelFlags log_level,
-                         const gchar *message,
-                         gpointer user_data G_GNUC_UNUSED)
-{
-    if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
-        return; // do not print anything
-    }
-    g_log_default_handler(log_domain, log_level, message, NULL);
-}
 
 SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 {
-
-    spice_log_set_debug_level();
-    if (glib_debug_level != INT_MAX) {
-        /* If SPICE_DEBUG_LEVEL is set, we need a custom handler, which is
-         * going to break use of g_log_set_default_handler() by apps
-         */
-        g_log_set_handler(G_LOG_DOMAIN,
-                          G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
-                          spice_logger, NULL);
-    }
     /* Threading is always enabled from 2.31.0 onwards */
     /* Our logging is potentially used from different threads.
      * Older glibs require that g_thread_init() is called when
@@ -138,10 +55,6 @@ static void spice_logv(const char *log_domain,
                        va_list args)
 {
     GString *log_msg;
-
-    if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
-        return; // do not print anything
-    }
 
     log_msg = g_string_new(NULL);
     if (strloc && function) {

@@ -217,71 +217,6 @@ static void test_log_levels(void)
     g_test_trap_assert_stdout_unmatched("*other_debug*");
 }
 
-/* Checks that SPICE_DEBUG_LEVEL impacts spice_debug(), g_debug() but not other_debug() */
-static void test_spice_debug_level(void)
-{
-    if (g_test_subprocess()) {
-        /* g_test_expected_message only checks whether the appropriate messages got up to g_log()
-         * The following calls will be caught by the parent process to check what was (not) printed
-         * to stdout/stderr
-         */
-        spice_info("spice_info");
-        g_debug("g_debug");
-        spice_debug("spice_debug");
-        other_debug("other_debug");
-
-        return;
-    }
-
-    g_unsetenv("G_MESSAGES_DEBUG");
-    g_setenv("SPICE_DEBUG_LEVEL", "5", TRUE);
-    g_test_trap_subprocess(NULL, 0, 0);
-    g_unsetenv("SPICE_DEBUG_LEVEL");
-    g_test_trap_assert_passed();
-    g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
-    g_test_trap_assert_stdout("*spice_info\n*g_debug\n*spice_debug\n");
-    g_test_trap_assert_stdout_unmatched("*other_debug*");
-}
-
-/* Checks that raising SPICE_DEBUG_LEVEL allows to only show spice_warning() and spice_critical()
- * messages, as well as g_warning() and g_critical(), but does not impact other_message()
- */
-static void test_spice_debug_level_warning(void)
-{
-    if (g_test_subprocess()) {
-        spice_info("spice_info");
-        spice_debug("spice_debug");
-        spice_warning("spice_warning");
-        g_debug("g_debug");
-        g_info("g_info");
-        g_message("g_message");
-        g_warning("g_warning");
-        g_critical("g_critical");
-        other_debug("other_debug");
-        other_info("other_info");
-        other_message("other_message");
-        other_warning("other_warning");
-        other_critical("other_critical");
-
-        return;
-    }
-
-    g_setenv("SPICE_DEBUG_LEVEL", "1", TRUE);
-    g_test_trap_subprocess(NULL, 0, 0);
-    g_unsetenv("SPICE_DEBUG_LEVEL");
-    g_test_trap_assert_passed();
-    g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
-    g_test_trap_assert_stderr("*g_critical\n*other_message\n*other_warning\n*other_critical\n");
-    g_test_trap_assert_stdout_unmatched("*spice_info*");
-    g_test_trap_assert_stdout_unmatched("*spice_debug*");
-    g_test_trap_assert_stderr_unmatched("*spice_warning*");
-    g_test_trap_assert_stdout_unmatched("*g_debug*");
-    g_test_trap_assert_stdout_unmatched("*g_info*");
-    g_test_trap_assert_stderr_unmatched("*g_message*");
-    g_test_trap_assert_stderr_unmatched("*g_warning*");
-    g_test_trap_assert_stdout_unmatched("*other_info*");
-}
-
 /* Checks that setting G_MESSAGES_DEBUG to 'Spice' impacts spice_debug() and
  * g_debug() but not other_debug() */
 static void test_spice_g_messages_debug(void)
@@ -358,8 +293,6 @@ int main(int argc, char **argv)
     g_log_set_always_fatal(fatal_mask & G_LOG_LEVEL_MASK);
 
 #if GLIB_CHECK_VERSION(2,38,0)
-    g_test_add_func("/spice-common/spice-debug-level", test_spice_debug_level);
-    g_test_add_func("/spice-common/spice-debug-level-warning", test_spice_debug_level_warning);
     g_test_add_func("/spice-common/spice-g-messages-debug", test_spice_g_messages_debug);
     g_test_add_func("/spice-common/spice-g-messages-debug-all", test_spice_g_messages_debug_all);
     g_test_add_func("/spice-common/spice-log-levels", test_log_levels);
