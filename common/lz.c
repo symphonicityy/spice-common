@@ -593,6 +593,9 @@ void lz_decode_begin(LzContext *lz, uint8_t *io_ptr, unsigned int num_io_bytes,
     }
 
     encoder->type = (LzImageType)decode_32(encoder);
+    if (encoder->type <= LZ_IMAGE_TYPE_INVALID || encoder->type > LZ_IMAGE_TYPE_A8) {
+        encoder->usr->error(encoder->usr, "invalid lz type %d\n", encoder->type);
+    }
     encoder->width = decode_32(encoder);
     encoder->height = decode_32(encoder);
     encoder->stride = decode_32(encoder);
