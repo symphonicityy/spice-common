@@ -16,10 +16,20 @@
 */
 #include <config.h>
 
+#include <stdlib.h>
+#include <stdbool.h>
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "common/quic.h"
+
+typedef enum {
+    COLOR_MODE_RGB,
+    COLOR_MODE_RGB16,
+    COLOR_MODE_GRAY,
+} color_mode_t;
+
+static color_mode_t color_mode = COLOR_MODE_RGB;
 
 typedef struct {
     QuicUsrContext usr;
@@ -89,34 +99,167 @@ static void init_quic_data(QuicData *quic_data)
     quic_data->dest = g_byte_array_new();
 }
 
-static GByteArray *quic_encode_from_pixbuf(GdkPixbuf *pixbuf)
+// RGB luminosity (sum 256) 54, 184, 18
+static inline uint8_t pixel_to_gray(uint8_t r, uint8_t g, uint8_t b)
+{
+    return (54u * r + 184u * g + 18u * b) / 256u;
+}
+
+static inline void gray_to_pixel(uint8_t gray, uint8_t *p)
+{
+    p[0] = p[1] = p[2] = gray;
+}
+
+static inline uint16_t pixel_to_rgb16(uint8_t r, uint8_t g, uint8_t b)
+{
+    r = (r >> 3) & 0x1Fu;
+    g = (g >> 3) & 0x1Fu;
+    b = (b >> 3) & 0x1Fu;
+    return r * (32u*32u) + g * 32u + b;
+}
+
+static inline void rgb16_to_pixel(uint16_t color, uint8_t *p)
+{
+    uint8_t comp;
+    comp = (color >> 10) & 0x1Fu;
+    *p++ = (comp << 3) | (comp >> 2);
+    color <<= 5;
+    comp = (color >> 10) & 0x1Fu;
+    *p++ = (comp << 3) | (comp >> 2);
+    color <<= 5;
+    comp = (color >> 10) & 0x1Fu;
+    *p++ = (comp << 3) | (comp >> 2);
+}
+
+#define CONVERT_PROC(TYPE, FUNC) \
+static void gdk_pixbuf_convert_to_##FUNC(GdkPixbuf *pixbuf, TYPE *dest_line, int dest_stride) \
+{ \
+    int width = gdk_pixbuf_get_width(pixbuf); \
+    int height = gdk_pixbuf_get_height(pixbuf); \
+    int n_channels = gdk_pixbuf_get_n_channels (pixbuf); \
+    int stride = gdk_pixbuf_get_rowstride(pixbuf); \
+    uint8_t *line = gdk_pixbuf_get_pixels(pixbuf); \
+ \
+    for (int y = 0; y < height; y++) { \
+        uint8_t *p = line; \
+        TYPE *dest = dest_line; \
+        for (int x = 0; x < width; x++) { \
+ \
+            *dest = pixel_to_##FUNC(p[0], p[1], p[2]); \
+            FUNC##_to_pixel(*dest, p); \
+            ++dest; \
+            p += n_channels; \
+        } \
+        line += stride; \
+        dest_line = (TYPE*)((char*) dest_line + dest_stride); \
+    } \
+}
+
+CONVERT_PROC(uint8_t, gray)
+CONVERT_PROC(uint16_t, rgb16)
+
+#define UNCONVERT_PROC(TYPE, FUNC) \
+static void gdk_pixbuf_unconvert_to_##FUNC(GdkPixbuf *pixbuf) \
+{ \
+    const int width = gdk_pixbuf_get_width(pixbuf); \
+    const int height = gdk_pixbuf_get_height(pixbuf); \
+    const int n_channels = gdk_pixbuf_get_n_channels(pixbuf); \
+    const int stride = gdk_pixbuf_get_rowstride(pixbuf); \
+    uint8_t *line = gdk_pixbuf_get_pixels(pixbuf) + stride*height; \
+ \
+    for (int y = 0; y < height; y++) { \
+        line -= stride; \
+        uint8_t *p = line + width*n_channels; \
+        const TYPE *dest = (TYPE*) line + width; \
+        for (int x = 0; x < width; x++) { \
+            --dest; \
+            p -= n_channels; \
+            FUNC##_to_pixel(*dest, p); \
+            if (n_channels == 4) { \
+                p[3] = 255; \
+            } \
+        } \
+    } \
+    g_assert(line == gdk_pixbuf_get_pixels(pixbuf)); \
+}
+
+UNCONVERT_PROC(uint8_t, gray)
+UNCONVERT_PROC(uint16_t, rgb16)
+
+typedef struct {
+    QuicImageType quic_type;
+    uint8_t *pixels;
+    int stride;
+    GdkPixbuf *pixbuf;
+} ImageBuf;
+
+static ImageBuf *image_buf_init(ImageBuf *imgbuf, GdkPixbuf *pixbuf)
+{
+    imgbuf->pixbuf = pixbuf;
+    switch (gdk_pixbuf_get_n_channels(pixbuf)) {
+        case 3:
+            imgbuf->quic_type = QUIC_IMAGE_TYPE_RGB24;
+            break;
+        case 4:
+            imgbuf->quic_type = QUIC_IMAGE_TYPE_RGBA;
+            break;
+        default:
+            g_assert_not_reached();
+    }
+    imgbuf->pixels = gdk_pixbuf_get_pixels(pixbuf);
+    imgbuf->stride = gdk_pixbuf_get_rowstride(pixbuf);
+
+    if (color_mode == COLOR_MODE_GRAY) {
+        int stride = gdk_pixbuf_get_width(pixbuf);
+        uint8_t *pixels = g_malloc(stride * gdk_pixbuf_get_height(pixbuf));
+        gdk_pixbuf_convert_to_gray(pixbuf, pixels, stride);
+        imgbuf->stride = stride;
+        imgbuf->pixels = pixels;
+        imgbuf->quic_type = QUIC_IMAGE_TYPE_GRAY;
+    } else if (color_mode == COLOR_MODE_RGB16) {
+        int stride = gdk_pixbuf_get_width(pixbuf)*2;
+        uint16_t *pixels = g_malloc(stride * gdk_pixbuf_get_height(pixbuf));
+        gdk_pixbuf_convert_to_rgb16(pixbuf, pixels, stride);
+        imgbuf->stride = stride;
+        imgbuf->pixels = (uint8_t*)pixels;
+        imgbuf->quic_type = QUIC_IMAGE_TYPE_RGB16;
+    }
+
+    return imgbuf;
+}
+
+static void image_buf_free(ImageBuf *imgbuf, GdkPixbuf *pixbuf)
+{
+    if (imgbuf->quic_type == QUIC_IMAGE_TYPE_GRAY) {
+        gdk_pixbuf_unconvert_to_gray(pixbuf);
+    }
+
+    if (imgbuf->quic_type == QUIC_IMAGE_TYPE_RGB16) {
+        gdk_pixbuf_unconvert_to_rgb16(pixbuf);
+    }
+
+    if (imgbuf->pixels != gdk_pixbuf_get_pixels(imgbuf->pixbuf)) {
+        g_free(imgbuf->pixels);
+    }
+}
+
+static GByteArray *quic_encode_from_pixbuf(GdkPixbuf *pixbuf, const ImageBuf *imgbuf)
 {
     QuicData quic_data;
     QuicContext *quic;
     int encoded_size;
-    QuicImageType quic_type;
 
     init_quic_data(&quic_data);
     g_byte_array_set_size(quic_data.dest, 1024);
 
     quic = quic_create(&quic_data.usr);
     g_assert(quic != NULL);
-    switch (gdk_pixbuf_get_n_channels(pixbuf)) {
-        case 3:
-            quic_type = QUIC_IMAGE_TYPE_RGB24;
-            break;
-        case 4:
-            quic_type = QUIC_IMAGE_TYPE_RGBA;
-            break;
-        default:
-            g_assert_not_reached();
-    }
-    encoded_size = quic_encode(quic, quic_type,
+    encoded_size = quic_encode(quic, imgbuf->quic_type,
                                gdk_pixbuf_get_width(pixbuf),
                                gdk_pixbuf_get_height(pixbuf),
-                               gdk_pixbuf_get_pixels(pixbuf),
+                               imgbuf->pixels,
                                gdk_pixbuf_get_height(pixbuf),
-                               gdk_pixbuf_get_rowstride(pixbuf),
+                               imgbuf->stride,
                                (uint32_t *)quic_data.dest->data,
                                quic_data.dest->len/sizeof(uint32_t));
     g_assert(encoded_size > 0);
@@ -165,24 +308,31 @@ static void gdk_pixbuf_compare(GdkPixbuf *pixbuf_a, GdkPixbuf *pixbuf_b)
 {
     int width = gdk_pixbuf_get_width(pixbuf_a);
     int height = gdk_pixbuf_get_height(pixbuf_a);
-    int n_channels = gdk_pixbuf_get_n_channels(pixbuf_a);
+    int n_channels_a = gdk_pixbuf_get_n_channels(pixbuf_a);
+    int n_channels_b = gdk_pixbuf_get_n_channels(pixbuf_b);
     int x;
     int y;
     guint8 *pixels_a = gdk_pixbuf_get_pixels(pixbuf_a);
     guint8 *pixels_b = gdk_pixbuf_get_pixels(pixbuf_b);
+    bool check_alpha = gdk_pixbuf_get_has_alpha(pixbuf_a);
 
     g_assert(width == gdk_pixbuf_get_width(pixbuf_b));
     g_assert(height == gdk_pixbuf_get_height(pixbuf_b));
-    g_assert(n_channels == gdk_pixbuf_get_n_channels(pixbuf_b));
+    if (color_mode != COLOR_MODE_RGB) {
+        check_alpha = false;
+    } else {
+        g_assert(n_channels_a == n_channels_b);
+        g_assert(gdk_pixbuf_get_byte_length(pixbuf_a) == gdk_pixbuf_get_byte_length(pixbuf_b));
+    }
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            guint8 *p_a = pixels_a + y*gdk_pixbuf_get_rowstride(pixbuf_a) + x*n_channels;
-            guint8 *p_b = pixels_b + y*gdk_pixbuf_get_rowstride(pixbuf_b) + x*n_channels;
+            guint8 *p_a = pixels_a + y*gdk_pixbuf_get_rowstride(pixbuf_a) + x*n_channels_a;
+            guint8 *p_b = pixels_b + y*gdk_pixbuf_get_rowstride(pixbuf_b) + x*n_channels_b;
 
             g_assert(p_a[0] == p_b[0]);
             g_assert(p_a[1] == p_b[1]);
             g_assert(p_a[2] == p_b[2]);
-            if (gdk_pixbuf_get_has_alpha(pixbuf_a)) {
+            if (check_alpha) {
                 g_assert(p_a[3] == p_b[3]);
             }
         }
@@ -215,11 +365,13 @@ static void test_pixbuf(GdkPixbuf *pixbuf)
     g_assert(gdk_pixbuf_get_colorspace(pixbuf) == GDK_COLORSPACE_RGB);
     g_assert(gdk_pixbuf_get_bits_per_sample(pixbuf) == 8);
 
-    compressed_data = quic_encode_from_pixbuf(pixbuf);
+    ImageBuf imgbuf[1];
+    image_buf_init(imgbuf, pixbuf);
+    compressed_data = quic_encode_from_pixbuf(pixbuf, imgbuf);
 
     uncompressed_pixbuf = quic_decode_to_pixbuf(compressed_data);
+    image_buf_free(imgbuf, uncompressed_pixbuf);
 
-    g_assert(gdk_pixbuf_get_byte_length(pixbuf) == gdk_pixbuf_get_byte_length(uncompressed_pixbuf));
     //g_assert(memcmp(gdk_pixbuf_get_pixels(pixbuf), gdk_pixbuf_get_pixels(uncompressed_pixbuf), gdk_pixbuf_get_byte_length(uncompressed_pixbuf)));
     gdk_pixbuf_compare(pixbuf, uncompressed_pixbuf);
 
@@ -242,6 +394,7 @@ int main(int argc, char **argv)
         unsigned int count;
 
         for (count = 0; count < 50; count++) {
+            color_mode = (color_mode_t) (count % 3);
             GdkPixbuf *pixbuf = gdk_pixbuf_new_random();
             test_pixbuf(pixbuf);
             g_object_unref(pixbuf);
