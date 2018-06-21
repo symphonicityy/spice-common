@@ -246,7 +246,7 @@ class TypeAlias(Type):
     def c_type(self):
         if self.has_attr("ctype"):
             return self.attributes["ctype"][0]
-        return self.name
+        return self.the_type.c_type()
 
 class EnumBaseType(Type):
     def is_enum(self):
