@@ -549,7 +549,14 @@ void spice_marshaller_flush(SpiceMarshaller *m)
     }
 }
 
-#ifndef WIN32
+#ifdef WIN32
+// this definition is ABI compatible with WSABUF
+struct iovec {
+    unsigned long iov_len;
+    void *iov_base;
+};
+#endif
+
 int spice_marshaller_fill_iovec(SpiceMarshaller *m, struct iovec *vec,
                                 int n_vec, size_t skip_bytes)
 {
@@ -581,7 +588,6 @@ int spice_marshaller_fill_iovec(SpiceMarshaller *m, struct iovec *vec,
 
     return v;
 }
-#endif
 
 void *spice_marshaller_add_uint64(SpiceMarshaller *m, uint64_t v)
 {
