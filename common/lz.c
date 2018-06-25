@@ -53,6 +53,8 @@
 #define HASH_SIZE (1 << HASH_LOG)
 #define HASH_MASK (HASH_SIZE - 1)
 
+/* Maximum image size, mainly to avoid possible integer overflows */
+#define SPICE_MAX_IMAGE_SIZE (1024 * 1024 * 1024 - 1)
 
 typedef struct LzImageSegment LzImageSegment;
 struct LzImageSegment {
@@ -481,6 +483,44 @@ typedef uint16_t rgb16_pixel_t;
 #undef LZ_UNEXPECT_CONDITIONAL
 #undef LZ_EXPECT_CONDITIONAL
 
+static void lz_set_sizes(Encoder *encoder, int type, int width, int height, int stride)
+{
+    if (width < 0) {
+        encoder->usr->error(encoder->usr, "invalid lz width %d\n", width);
+    }
+    if (height < 0) {
+        encoder->usr->error(encoder->usr, "invalid lz height %d\n", height);
+    }
+    if (stride < 0) {
+        encoder->usr->error(encoder->usr, "invalid lz stride %d\n", stride);
+    }
+
+    if (IS_IMAGE_TYPE_PLT[type]) {
+        if (stride > (width / PLT_PIXELS_PER_BYTE[type])) {
+            if (((width % PLT_PIXELS_PER_BYTE[type]) == 0) || (
+                    (stride - (width / PLT_PIXELS_PER_BYTE[type])) > 1)) {
+                encoder->usr->error(encoder->usr, "stride overflows (plt)\n");
+            }
+        }
+    } else {
+        if (stride != width * RGB_BYTES_PER_PIXEL[type]) {
+            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb) %d != %d * %d (%d)\n",
+                                stride, width, RGB_BYTES_PER_PIXEL[type],
+                                type);
+        }
+    }
+
+    // avoid too big images
+    if ((uint64_t) stride * height > SPICE_MAX_IMAGE_SIZE) {
+        encoder->usr->error(encoder->usr, "image too large\n");
+    }
+
+    encoder->type = type;
+    encoder->width = width;
+    encoder->height = height;
+    encoder->stride = stride;
+}
+
 int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_down,
               uint8_t *lines, unsigned int num_lines, int stride,
               uint8_t *io_ptr, unsigned int num_io_bytes)
@@ -488,25 +528,7 @@ int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_do
     Encoder *encoder = (Encoder *)lz;
     uint8_t *io_ptr_end = io_ptr + num_io_bytes;
 
-    encoder->type = type;
-    encoder->width = width;
-    encoder->height = height;
-    encoder->stride = stride;
-
-    if (IS_IMAGE_TYPE_PLT[encoder->type]) {
-        if (encoder->stride > (width / PLT_PIXELS_PER_BYTE[encoder->type])) {
-            if (((width % PLT_PIXELS_PER_BYTE[encoder->type]) == 0) || (
-                    (encoder->stride - (width / PLT_PIXELS_PER_BYTE[encoder->type])) > 1)) {
-                encoder->usr->error(encoder->usr, "stride overflows (plt)\n");
-            }
-        }
-    } else {
-        if (encoder->stride != width * RGB_BYTES_PER_PIXEL[encoder->type]) {
-            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb) %d != %d * %d (%d)\n",
-                                encoder->stride, width, RGB_BYTES_PER_PIXEL[encoder->type],
-                                encoder->type);
-        }
-    }
+    lz_set_sizes(encoder, type, width, height, stride);
 
     // assign the output buffer
     if (!encoder_reset(encoder, io_ptr, io_ptr_end)) {
@@ -592,13 +614,15 @@ void lz_decode_begin(LzContext *lz, uint8_t *io_ptr, unsigned int num_io_bytes,
         encoder->usr->error(encoder->usr, "bad version\n");
     }
 
-    encoder->type = (LzImageType)decode_32(encoder);
-    if (encoder->type <= LZ_IMAGE_TYPE_INVALID || encoder->type > LZ_IMAGE_TYPE_A8) {
+    int type = decode_32(encoder);
+    if (type <= LZ_IMAGE_TYPE_INVALID || type > LZ_IMAGE_TYPE_A8) {
         encoder->usr->error(encoder->usr, "invalid lz type %d\n", encoder->type);
     }
-    encoder->width = decode_32(encoder);
-    encoder->height = decode_32(encoder);
-    encoder->stride = decode_32(encoder);
+    int width = decode_32(encoder);
+    int height = decode_32(encoder);
+    int stride = decode_32(encoder);
+    lz_set_sizes(encoder, type, width, height, stride);
+
     *out_top_down = decode_32(encoder);
 
     *out_width = encoder->width;
