@@ -105,19 +105,6 @@ flags16 mouse_mode {
     CLIENT,
 };
 
-enum16 pubkey_type {
-    INVALID,
-    RSA,
-    RSA2,
-    DSA,
-    DSA1,
-    DSA2,
-    DSA3,
-    DSA4,
-    DH,
-    EC,
-};
-
 message Empty {
 };
 
@@ -535,7 +522,7 @@ struct DisplayBase {
 } @ctype(SpiceMsgDisplayBase);
 
 struct ResourceID {
-    uint8 type;
+    uint8 type;  /* resource_type */
     uint64 id;
 };
 

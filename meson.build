@@ -25,7 +25,6 @@ spice_common_deps = []
 spice_common_include = include_directories('.')
 
 spice_proto = files('spice.proto')
-spice1_proto = files('spice1.proto')
 spice_codegen = files('spice_codegen.py')
 spice_codegen_files = [spice_codegen]
 

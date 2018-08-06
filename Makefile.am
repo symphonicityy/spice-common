@@ -8,7 +8,6 @@ EXTRA_DIST =				\
 	meson_options.txt		\
 	spice_codegen.py		\
 	spice.proto			\
-	spice1.proto			\
 	$(NULL)
 
 DISTCLEANFILES = *.pyc

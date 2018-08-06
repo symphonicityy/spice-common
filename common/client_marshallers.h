@@ -32,7 +32,6 @@
 SPICE_BEGIN_DECLS
 
 SpiceMessageMarshallers *spice_message_marshallers_get(void);
-SpiceMessageMarshallers *spice_message_marshallers_get1(void);
 
 SPICE_END_DECLS
 
