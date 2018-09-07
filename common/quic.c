@@ -452,7 +452,8 @@ static inline void read_io_word(Encoder *encoder)
     if (spice_extra_checks) {
         spice_assert(encoder->io_now < encoder->io_end);
     }
-    encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
+    encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now));
+    encoder->io_now++;
 }
 
 static inline void decode_eatbits(Encoder *encoder, int len)
@@ -585,7 +586,8 @@ static int decode_state_run(Encoder *encoder, CommonState *state)
 
 static inline void init_decode_io(Encoder *encoder)
 {
-    encoder->io_next_word = encoder->io_word = GUINT32_FROM_LE(*(encoder->io_now++));
+    encoder->io_next_word = encoder->io_word = GUINT32_FROM_LE(*(encoder->io_now));
+    encoder->io_now++;
     encoder->io_available_bits = 0;
 }
 
