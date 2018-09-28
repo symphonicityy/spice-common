@@ -109,9 +109,6 @@ valid_attributes=set([
     'zero',
     # specify minor version required for these members
     'minor',
-    # this member contains the byte count for an array.
-    # the argument is the member name for item count (not bytes)
-    'bytes_count',
     # this attribute does not exist on the network, fill just structure with the value
     'virtual',
     # for a switch this indicates that on network
@@ -126,7 +123,6 @@ attributes_with_arguments=set([
     'outvar',
     'ifdef',
     'minor',
-    'bytes_count',
     'virtual',
 ])
 

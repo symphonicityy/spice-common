@@ -940,10 +940,7 @@ def write_member_parser(writer, container, member, dest, scope):
             writer.statement("*(%s *)end = consume_%s(&in)" % (t.c_type(), t.primitive_type()))
             writer.increment("end", t.sizeof())
         else:
-            if member.has_attr("bytes_count"):
-                dest_var = dest.get_ref(member.attributes["bytes_count"][0])
-            else:
-                dest_var = dest.get_ref(member.name)
+            dest_var = dest.get_ref(member.name)
             writer.assign(dest_var, "consume_%s(&in)" % (t.primitive_type()))
         #TODO validate e.g. flags and enums
     elif t.is_array():
