@@ -729,10 +729,6 @@ def write_switch_parser(writer, container, switch, dest, scope):
     var = container.lookup_member(switch.variable)
     var_type = var.member_type
 
-    if switch.has_attr("fixedsize"):
-        scope.variable_def("uint8_t *", "in_save")
-        writer.assign("in_save", "in")
-
     first = True
     for c in switch.cases:
         check = c.get_check(dest.get_ref(switch.variable), var_type)
@@ -774,9 +770,6 @@ def write_switch_parser(writer, container, switch, dest, scope):
         first = False
 
     writer.newline()
-
-    if switch.has_attr("fixedsize"):
-        writer.assign("in", "in_save + %s" % switch.get_fixed_nw_size())
 
 def write_parse_ptr_function(writer, target_type):
     if target_type.is_array():

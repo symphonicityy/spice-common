@@ -111,9 +111,6 @@ valid_attributes=set([
     'minor',
     # this attribute does not exist on the network, fill just structure with the value
     'virtual',
-    # for a switch this indicates that on network
-    # it will occupy always the same size (maximum size required for all members)
-    'fixedsize',
 ])
 
 attributes_with_arguments=set([
@@ -737,9 +734,6 @@ class Switch(Containee):
         return True
 
     def is_fixed_nw_size(self):
-        if self.has_attr("fixedsize"):
-            return True
-
         size = None
         has_default = False
         for c in self.cases:

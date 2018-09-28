@@ -289,15 +289,7 @@ def write_switch_marshaller(writer, container, switch, src, scope):
             else:
                 writer.todo("Can't handle type %s" % m.member_type)
 
-            if switch.has_attr("fixedsize"):
-                remaining = switch.get_fixed_nw_size() - t.get_fixed_nw_size()
-                if remaining != 0:
-                    writer.statement("spice_marshaller_reserve_space(m, %s)" % remaining)
-
         first = False
-    if switch.has_attr("fixedsize"):
-        with writer.block(" else"):
-            writer.statement("spice_marshaller_reserve_space(m, %s)" % switch.get_fixed_nw_size())
 
     writer.newline()
 
