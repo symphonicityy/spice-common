@@ -92,8 +92,8 @@ def write_parser_helpers(writer):
     writer.newline()
     writer.statement("typedef struct PointerInfo PointerInfo")
     writer.statement("typedef void (*message_destructor_t)(uint8_t *message)")
-    writer.statement("typedef uint8_t * (*parse_func_t)(uint8_t *message_start, uint8_t *message_end, uint8_t *struct_data, PointerInfo *ptr_info, int minor)")
-    writer.statement("typedef uint8_t * (*parse_msg_func_t)(uint8_t *message_start, uint8_t *message_end, int minor, size_t *size_out, message_destructor_t *free_message)")
+    writer.statement("typedef uint8_t * (*parse_func_t)(uint8_t *message_start, uint8_t *message_end, uint8_t *struct_data, PointerInfo *ptr_info)")
+    writer.statement("typedef uint8_t * (*parse_msg_func_t)(uint8_t *message_start, uint8_t *message_end, size_t *size_out, message_destructor_t *free_message)")
     writer.statement("typedef uint8_t * (*spice_parse_channel_func_t)(uint8_t *message_start, uint8_t *message_end, uint16_t message_type, int minor, size_t *size_out, message_destructor_t *free_message)")
 
     writer.newline()
@@ -216,7 +216,7 @@ def write_validate_struct_function(writer, struct):
 
     writer.set_is_generated("validator", validate_function)
     writer = writer.function_helper()
-    scope = writer.function(validate_function, "static intptr_t", "uint8_t *message_start, uint8_t *message_end, uint64_t offset, SPICE_GNUC_UNUSED int minor")
+    scope = writer.function(validate_function, "static intptr_t", "uint8_t *message_start, uint8_t *message_end, uint64_t offset")
     scope.variable_def("uint8_t *", "start = message_start + offset")
     scope.variable_def("SPICE_GNUC_UNUSED uint8_t *", "pos")
     scope.variable_def("uint64_t", "mem_size", "nw_size")
@@ -301,7 +301,7 @@ def write_validate_pointer_item(writer, container, item, scope, parent_scope, st
 
         elif target_type.is_struct():
             validate_function = write_validate_struct_function(writer, target_type)
-            writer.assign("ptr_size", "%s(message_start, message_end, %s, minor)" % (validate_function, v))
+            writer.assign("ptr_size", "%s(message_start, message_end, %s)" % (validate_function, v))
             writer.error_check("ptr_size < 0")
 
             if want_extra_size:
@@ -512,12 +512,8 @@ def write_validate_member(writer, mprefix, container, member, parent_scope, star
     if member.has_attr("virtual"):
         return
 
-    if member.has_minor_attr():
-        prefix = "if (minor >= %s)" % (member.get_minor_attr())
-        newline = False
-    else:
-        prefix = ""
-        newline = True
+    prefix = ""
+    newline = True
     item = MemberItemInfo(member, mprefix, container, start)
     with writer.block(prefix, newline=newline, comment=member.name) as scope:
         if member.is_switch():
@@ -526,24 +522,6 @@ def write_validate_member(writer, mprefix, container, member, parent_scope, star
         else:
             write_validate_item(writer, container, item, scope, parent_scope, start,
                                 want_nw_size, want_mem_size, want_extra_size)
-
-    if member.has_minor_attr():
-        with writer.block(" else", comment = "minor < %s" % (member.get_minor_attr())):
-            if member.is_array():
-                nelements = "%s__nelements" %(item.prefix)
-                writer.assign(nelements, 0)
-            if want_nw_size:
-                writer.assign(item.nw_size(), 0)
-
-            if want_mem_size:
-                if member.is_fixed_sizeof():
-                    writer.assign(item.mem_size(), member.sizeof())
-                elif member.is_array():
-                    writer.assign(item.mem_size(), 0)
-                else:
-                    raise NotImplementedError("TODO minor check for non-constant items")
-
-            assert not want_extra_size
 
 def write_validate_container(writer, prefix, container, start, parent_scope, want_nw_size, want_mem_size, want_extra_size):
     def prefix_m(prefix, m):
@@ -782,7 +760,7 @@ def write_parse_ptr_function(writer, target_type):
     writer.set_is_generated("parser", parse_function)
 
     writer = writer.function_helper()
-    scope = writer.function(parse_function, "static uint8_t *", "uint8_t *message_start, SPICE_GNUC_UNUSED uint8_t *message_end, uint8_t *struct_data, PointerInfo *this_ptr_info, SPICE_GNUC_UNUSED int minor")
+    scope = writer.function(parse_function, "static uint8_t *", "uint8_t *message_start, SPICE_GNUC_UNUSED uint8_t *message_end, uint8_t *struct_data, PointerInfo *this_ptr_info")
     scope.variable_def("uint8_t *", "in = message_start + this_ptr_info->offset")
     scope.variable_def("uint8_t *", "end")
 
@@ -977,24 +955,7 @@ def write_member_parser(writer, container, member, dest, scope):
 def write_container_parser(writer, container, dest):
     with dest.declare(writer) as scope:
         for m in container.members:
-            if m.has_minor_attr():
-                writer.begin_block("if (minor >= %s)" % m.get_minor_attr())
             write_member_parser(writer, container, m, dest, scope)
-            if m.has_minor_attr():
-                # We need to zero out the fixed part of all optional fields
-                if not m.member_type.is_array():
-                    writer.end_block(newline=False)
-                    writer.begin_block(" else")
-                    # TODO: This is not right for fields that don't exist in the struct
-                    if m.has_attr("zero"):
-                        pass
-                    elif m.member_type.is_primitive():
-                        writer.assign(dest.get_ref(m.name), "0")
-                    elif m.is_fixed_sizeof():
-                        writer.statement("memset ((char *)&%s, 0, %s)" % (dest.get_ref(m.name), m.sizeof()))
-                    else:
-                        raise NotImplementedError("TODO Clear optional dynamic fields")
-                writer.end_block()
 
 def write_ptr_info_check(writer):
     writer.newline()
@@ -1009,7 +970,7 @@ def write_ptr_info_check(writer):
                 writer.comment("Align to 32 bit").newline()
                 writer.assign("end", "(uint8_t *)SPICE_ALIGN((size_t)end, 4)")
                 writer.assign("*%s" % dest, "(void *)end")
-                writer.assign("end", "%s(message_start, message_end, end, &ptr_info[%s], minor)" % (function, index))
+                writer.assign("end", "%s(message_start, message_end, end, &ptr_info[%s])" % (function, index))
                 writer.error_check("end == NULL")
     writer.newline()
 
@@ -1037,7 +998,7 @@ def write_msg_parser(writer, message):
         writer.ifdef(message.attributes["ifdef"][0])
     parent_scope = writer.function(function_name,
                                    "uint8_t *",
-                                   "uint8_t *message_start, uint8_t *message_end, SPICE_GNUC_UNUSED int minor, size_t *size, message_destructor_t *free_message", True)
+                                   "uint8_t *message_start, uint8_t *message_end, size_t *size, message_destructor_t *free_message", True)
     parent_scope.variable_def("SPICE_GNUC_UNUSED uint8_t *", "pos")
     parent_scope.variable_def("uint8_t *", "start = message_start")
     parent_scope.variable_def("uint8_t *", "data = NULL")
@@ -1160,7 +1121,7 @@ def write_channel_parser(writer, channel, server):
     for r in ranges:
         d = d + 1
         with writer.if_block("message_type >= %d && message_type < %d" % (r[0], r[1]), d > 1, False):
-            writer.statement("return funcs%d[message_type-%d](message_start, message_end, minor, size_out, free_message)" % (d, r[0]))
+            writer.statement("return funcs%d[message_type-%d](message_start, message_end, size_out, free_message)" % (d, r[0]))
     writer.newline()
 
     writer.statement("return NULL")

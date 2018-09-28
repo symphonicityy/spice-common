@@ -15,46 +15,6 @@ def lookup_type(name):
 def get_named_types():
     return _types
 
-class FixedSize:
-    def __init__(self, val = 0, minor = 0):
-        if isinstance(val, FixedSize):
-            self.vals = val.vals
-        else:
-            self.vals = [0] * (minor + 1)
-            self.vals[minor] = val
-
-    def __add__(self, other):
-        if isinstance(other, int):
-            other = FixedSize(other)
-
-        new = FixedSize()
-        l = max(len(self.vals), len(other.vals))
-        shared = min(len(self.vals), len(other.vals))
-
-        new.vals = [0] * l
-
-        for i in range(shared):
-            new.vals[i] = self.vals[i] + other.vals[i]
-
-        for i in range(shared,len(self.vals)):
-            new.vals[i] = self.vals[i]
-
-        for i in range(shared,len(other.vals)):
-            new.vals[i] = new.vals[i] + other.vals[i]
-
-        return new
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __str__(self):
-        s = "%d" % (self.vals[0])
-
-        for i in range(1,len(self.vals)):
-            if self.vals[i] > 0:
-                s = s + " + ((minor >= %d)?%d:0)" % (i, self.vals[i])
-        return s
-
 # Some attribute are propagated from member to the type as they really
 # are part of the type definition, rather than the member. This applies
 # only to attributes that affect pointer or array attributes, as these
@@ -107,8 +67,6 @@ valid_attributes=set([
     # when marshalling, a zero field is written to the network
     # when demarshalling, the field is read from the network and discarded
     'zero',
-    # specify minor version required for these members
-    'minor',
     # this attribute does not exist on the network, fill just structure with the value
     'virtual',
 ])
@@ -119,7 +77,6 @@ attributes_with_arguments=set([
     'as_ptr',
     'outvar',
     'ifdef',
-    'minor',
     'virtual',
 ])
 
@@ -587,14 +544,8 @@ class Containee:
             raise Exception('attribute %s not expected' % name)
         return name in self.attributes
 
-    def has_minor_attr(self):
-        return self.has_attr("minor")
-
     def has_end_attr(self):
         return self.has_attr("end")
-
-    def get_minor_attr(self):
-        return self.attributes["minor"][0]
 
 class Member(Containee):
     def __init__(self, name, member_type, attribute_list):
@@ -635,9 +586,6 @@ class Member(Containee):
         if self.has_attr("virtual"):
             return 0
         size = self.member_type.get_fixed_nw_size()
-        if self.has_minor_attr():
-            minor = self.get_minor_attr()
-            size = FixedSize(size, minor)
         return size
 
     def contains_extra_size(self):

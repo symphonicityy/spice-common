@@ -445,11 +445,6 @@ zero
 
 TODO
 
-minor
-~~~~~
-
-TODO
-
 virtual
 ~~~~~~~
 
