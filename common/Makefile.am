@@ -21,6 +21,7 @@ libspice_common_la_SOURCES =		\
 	backtrace.h			\
 	canvas_utils.c			\
 	canvas_utils.h			\
+	demarshallers.h			\
 	draw.h				\
 	lines.c				\
 	lines.h				\
@@ -63,7 +64,6 @@ EXTRA_libspice_common_la_SOURCES = 	\
 	$(NULL)
 
 libspice_common_client_la_SOURCES =		\
-	client_demarshallers.h			\
 	client_marshallers.h			\
 	ssl_verify.c				\
 	ssl_verify.h				\

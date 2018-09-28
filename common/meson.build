@@ -6,6 +6,7 @@ spice_common_sources = [
   'backtrace.h',
   'canvas_utils.c',
   'canvas_utils.h',
+  'demarshallers.h',
   'draw.h',
   'lines.c',
   'lines.h',
@@ -57,7 +58,6 @@ if spice_common_generate_client_code
   ]
 
   spice_common_client_sources = [
-    'client_demarshallers.h',
     'client_marshallers.h',
     'ssl_verify.c',
     'ssl_verify.h',

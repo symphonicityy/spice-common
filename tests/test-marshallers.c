@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include <common/marshaller.h>
-#include <common/client_demarshallers.h>
+#include <common/demarshallers.h>
 #include "generated_test_enums.h"
 #include "generated_test_marshallers.h"
 
