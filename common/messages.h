@@ -31,10 +31,6 @@
 #ifndef _H_MESSAGES
 #define _H_MESSAGES
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <spice/protocol.h>
 #include <spice/macros.h>
 

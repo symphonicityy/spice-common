@@ -19,10 +19,6 @@
 #ifndef _H_MARSHALLERS
 #define _H_MARSHALLERS
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #include <spice/protocol.h>
 
 #include "common/generated_client_marshallers.h"

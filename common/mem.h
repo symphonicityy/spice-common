@@ -23,10 +23,6 @@
 #include <stdlib.h>
 #include <spice/macros.h>
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 SPICE_BEGIN_DECLS
 
 #ifdef STDC_HEADERS
