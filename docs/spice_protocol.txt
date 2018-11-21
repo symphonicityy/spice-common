@@ -365,7 +365,30 @@ the attribute was attached to a `len`-sized array).
 to_ptr
 ~~~~~~
 
-TODO
+This specifies that the corresponding C structure field contains a pointer to
+the data. On marshalling the pointer is used, on demarshalling the data is
+allocated in the memory block that holds the returned structure.
+The type of this field must be a structure.
+
+Example:
+
+    struct test {
+        uint16 num;
+    };
+
+    struct msg {
+        test ptr @to_ptr;
+    };
+
+Output C structure:
+
+    struct test {
+        uint16_t num;
+    };
+
+    struct msg {
+        struct test *ptr;
+    };
 
 nocopy
 ~~~~~~
