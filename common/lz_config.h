@@ -18,8 +18,8 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef __LZ_CONFIG_H
-#define __LZ_CONFIG_H
+#ifndef H_SPICE_COMMON_LZ_CONFIG
+#define H_SPICE_COMMON_LZ_CONFIG
 
 #include <spice/types.h>
 #include <spice/macros.h>
@@ -36,4 +36,4 @@
 #endif  // QXLDD
 #endif  //__GNUC__
 
-#endif  //__LZ_CONFIG_H
+#endif // H_SPICE_COMMON_LZ_CONFIG

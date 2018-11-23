@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_MARSHALLER
-#define _H_MARSHALLER
+#ifndef H_SPICE_COMMON_MARSHALLER
+#define H_SPICE_COMMON_MARSHALLER
 
 #include <stdbool.h>
 #include <spice/macros.h>

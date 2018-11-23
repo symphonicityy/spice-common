@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __QUIC_CONFIG_H
-#define __QUIC_CONFIG_H
+#ifndef H_SPICE_COMMON_QUIC_CONFIG
+#define H_SPICE_COMMON_QUIC_CONFIG
 
 #include <spice/types.h>
 #include <spice/macros.h>

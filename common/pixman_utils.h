@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H__PIXMAN_UTILS
-#define _H__PIXMAN_UTILS
+#ifndef H_SPICE_COMMON_PIXMAN_UTILS
+#define H_SPICE_COMMON_PIXMAN_UTILS
 
 #include <spice/types.h>
 #include <spice/macros.h>
@@ -140,4 +140,4 @@ void spice_pixman_copy_rect(pixman_image_t *image,
 
 SPICE_END_DECLS
 
-#endif /* _H__PIXMAN_UTILS */
+#endif // H_SPICE_COMMON_PIXMAN_UTILS

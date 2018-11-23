@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __MACROS_H
-#define __MACROS_H
+#ifndef H_SPICE_COMMON_MACROS
+#define H_SPICE_COMMON_MACROS
 
 #include "verify.h"
 
@@ -55,4 +55,4 @@
 
 #define SPICE_VERIFY(cond) verify_expr(cond, (void)1)
 
-#endif /* __MACROS_H */
+#endif // H_SPICE_COMMON_MACROS

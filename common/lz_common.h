@@ -20,8 +20,8 @@
 
 /*common header for encoder and decoder*/
 
-#ifndef _LZ_COMMON_H
-#define _LZ_COMMON_H
+#ifndef H_SPICE_COMMON_LZ_COMMON
+#define H_SPICE_COMMON_LZ_COMMON
 
 #include <spice/macros.h>
 #include "verify.h"
@@ -71,4 +71,4 @@ verify(SPICE_N_ELEMENTS(RGB_BYTES_PER_PIXEL) == (LZ_IMAGE_TYPE_A8 + 1));
 
 SPICE_END_DECLS
 
-#endif  // _LZ_COMMON_H
+#endif // H_SPICE_COMMON_LZ_COMMON

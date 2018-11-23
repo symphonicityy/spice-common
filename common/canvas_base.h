@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_CANVAS_BASE
-#define _H_CANVAS_BASE
+#ifndef H_SPICE_COMMON_CANVAS_BASE
+#define H_SPICE_COMMON_CANVAS_BASE
 
 #include <spice/macros.h>
 

@@ -15,8 +15,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef H_SPICE_LOG
-#define H_SPICE_LOG
+#ifndef H_SPICE_COMMON_LOG
+#define H_SPICE_COMMON_LOG
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -97,4 +97,4 @@ enum { spice_extra_checks = 0 };
 
 SPICE_END_DECLS
 
-#endif /* H_SPICE_LOG */
+#endif // H_SPICE_COMMON_LOG

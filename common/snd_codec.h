@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_SND_CODEC
-#define _H_SND_CODEC
+#ifndef H_SPICE_COMMON_SND_CODEC
+#define H_SPICE_COMMON_SND_CODEC
 
 
 #if HAVE_CELT051

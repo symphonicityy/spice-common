@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SSL_VERIFY_H
-#define SSL_VERIFY_H
+#ifndef H_SPICE_COMMON_SSL_VERIFY
+#define H_SPICE_COMMON_SSL_VERIFY
 
 #if defined(WIN32)
 #include <windows.h>
@@ -64,4 +64,4 @@ void spice_openssl_verify_free(SpiceOpenSSLVerify* verify);
 
 SPICE_END_DECLS
 
-#endif // SSL_VERIFY_H
+#endif // H_SPICE_COMMON_SSL_VERIFY

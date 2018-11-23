@@ -28,8 +28,8 @@
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _H_MESSAGES
-#define _H_MESSAGES
+#ifndef H_SPICE_COMMON_MESSAGES
+#define H_SPICE_COMMON_MESSAGES
 
 #include <spice/protocol.h>
 #include <spice/macros.h>
@@ -667,4 +667,4 @@ typedef struct SpiceMsgDisplayGlDraw {
 
 SPICE_END_DECLS
 
-#endif /* _H_SPICE_PROTOCOL */
+#endif // H_SPICE_COMMON_MESSAGES

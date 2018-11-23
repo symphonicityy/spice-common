@@ -28,8 +28,8 @@
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _H_SPICE_DRAW
-#define _H_SPICE_DRAW
+#ifndef H_SPICE_COMMON_DRAW
+#define H_SPICE_COMMON_DRAW
 
 #include <spice/macros.h>
 #include <spice/types.h>
@@ -302,4 +302,4 @@ static inline int spice_image_descriptor_is_lossy(const SpiceImageDescriptor *de
 
 SPICE_END_DECLS
 
-#endif /* _H_SPICE_DRAW */
+#endif // H_SPICE_COMMON_DRAW

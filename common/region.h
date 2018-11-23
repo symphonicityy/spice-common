@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_REGION
-#define _H_REGION
+#ifndef H_SPICE_COMMON_REGION
+#define H_SPICE_COMMON_REGION
 
 #include <stdint.h>
 #include <spice/macros.h>

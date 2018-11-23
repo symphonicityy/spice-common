@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BACKTRACE_H
-#define BACKTRACE_H
+#ifndef H_SPICE_COMMON_BACKTRACE
+#define H_SPICE_COMMON_BACKTRACE
 
 #include <spice/macros.h>
 
@@ -31,4 +31,4 @@ void spice_backtrace(void);
 
 SPICE_END_DECLS
 
-#endif // BACKTRACE_H
+#endif // H_SPICE_COMMON_BACKTRACE

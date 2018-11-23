@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_ROP3
-#define _H_ROP3
+#ifndef H_SPICE_COMMON_ROP3
+#define H_SPICE_COMMON_ROP3
 
 #include <stdint.h>
 #include <spice/macros.h>

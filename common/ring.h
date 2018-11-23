@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_RING2
-#define _H_RING2
+#ifndef H_SPICE_COMMON_RING
+#define H_SPICE_COMMON_RING
 
 #include "log.h"
 

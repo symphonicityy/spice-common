@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_MARSHALLERS
-#define _H_MARSHALLERS
+#ifndef H_SPICE_COMMON_CLIENT_MARSHALLERS
+#define H_SPICE_COMMON_CLIENT_MARSHALLERS
 
 #include <spice/protocol.h>
 

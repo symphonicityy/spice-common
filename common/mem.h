@@ -16,8 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_MEM
-#define _H_MEM
+#ifndef H_SPICE_COMMON_MEM
+#define H_SPICE_COMMON_MEM
 
 #include "log.h"
 #include <stdlib.h>

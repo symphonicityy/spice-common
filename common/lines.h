@@ -46,8 +46,8 @@ SOFTWARE.
 
 ******************************************************************/
 
-#ifndef LINES_H
-#define LINES_H
+#ifndef H_SPICE_COMMON_LINES
+#define H_SPICE_COMMON_LINES
 
 #include <stdlib.h>
 #include <string.h>
@@ -133,4 +133,4 @@ extern int spice_canvas_clip_spans(pixman_region32_t *clip_region,
 
 SPICE_END_DECLS
 
-#endif /* LINES_H */
+#endif // H_SPICE_COMMON_LINES

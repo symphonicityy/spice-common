@@ -3,8 +3,8 @@
         dictionary compression for images based on fastlz (http://www.fastlz.org/)
         (Distributed under MIT license).
 */
-#ifndef __LZ_H
-#define __LZ_H
+#ifndef H_SPICE_COMMON_LZ
+#define H_SPICE_COMMON_LZ
 
 #include <spice/macros.h>
 
@@ -79,4 +79,4 @@ void lz_destroy(LzContext *lz);
 
 SPICE_END_DECLS
 
-#endif  // __LZ_H
+#endif // H_SPICE_COMMON_LZ
