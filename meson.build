@@ -77,11 +77,6 @@ endforeach
 # check for system functions
 #
 functions = ['alloca',
-             'dup2',
-             'floor',
-             'fork',
-             'memmove',
-             'memset',
              'sigaction',
              'drand48']
 
