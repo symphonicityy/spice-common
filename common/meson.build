@@ -35,6 +35,8 @@ spice_common_sources = [
   'rop3.h',
   'snd_codec.c',
   'snd_codec.h',
+  'utils.c',
+  'utils.h',
   'verify.h'
 ]
 
