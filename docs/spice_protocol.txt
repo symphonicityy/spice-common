@@ -23,7 +23,7 @@ It resemble the C format.
 
 (here BNF with some regular expression is used).
 
-It's used to generate automatically code to marshall/demarshall the network data.
+It's used to generate automatically code to marshal/demarshal the network data.
 
 Example:
 
@@ -38,7 +38,7 @@ Example:
     };
 
 As you can see brackets like C are used and structures looks like C but you
-can also see that keyworks like `channel`, `protocol`, `message` or some
+can also see that keywords like `channel`, `protocol`, `message` or some
 predefined types like `uint32` are proper of the protocol.
 
 Comments
@@ -153,8 +153,8 @@ TODO: can a [] array not be the last and what happens ??
 `image_size` allow to specify an array holding an image, for instance
 
     uint16 width;
-    uint16 heigth;
-    uin18 raw_image[image_size(8, width, height)];
+    uint16 height;
+    uint8 raw_image[image_size(8, width, height)];
 
 could contain row data in raw_image. The constant `8` is the bit size of the image.
 
@@ -173,7 +173,7 @@ we'll have the `foo` name. Note that the field does not need to end the message 
 Structures
 ----------
 
-The simplest coumpound type is the structure. As in C is defined as a list of fields (any variable or switch).
+The simplest compound type is the structure. As in C is defined as a list of fields (any variable or switch).
 But as a protocol definition there are no alignment or padding and every field (beside pointer values) follow each other.
 
     struct ::= "struct" <identifier> "{" [ <fields> ] "}" <attributes> ";" ;
@@ -238,9 +238,9 @@ assigned 1 value and not 0. So first message (if no integer is specified) is ass
 messages from server while `client` from client. If not specified is assumed from
 server.
 
-For each channel you can specify a parent channel. Derived channel inherite all
+For each channel you can specify a parent channel. Derived channel inherits all
 messages specified in the parent.
-Note that messages from parent can be overrided by derived channels.
+Note that messages from parent can be overridden by derived channels.
 
 Protocol
 --------
