@@ -1,0 +1,3 @@
+[submodule "common/recorder"]
+	path = common/recorder
+	url = https://github.com/c3d/recorder.git

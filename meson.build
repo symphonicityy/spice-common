@@ -37,6 +37,10 @@ if host_machine.endian() == 'big'
   spice_common_config_data.set('WORDS_BIGENDIAN', '1')
 endif
 
+if get_option('recorder')
+  spice_common_config_data.set('ENABLE_RECORDER', '1')
+endif
+
 spice_common_generate_code = get_option('generate-code')
 spice_common_generate_client_code = spice_common_generate_code == 'all' or spice_common_generate_code == 'client'
 spice_common_generate_server_code = spice_common_generate_code == 'all' or spice_common_generate_code == 'server'
@@ -59,7 +63,9 @@ headers = ['alloca.h',
            'sys/socket.h',
            'sys/stat.h',
            'sys/types.h',
-           'unistd.h']
+           'unistd.h',
+           'regex.h',
+           'sys/mman.h']
 
 foreach header : headers
   if compiler.has_header(header)
@@ -75,7 +81,9 @@ functions = ['alloca',
              'floor',
              'fork',
              'memmove',
-             'memset']
+             'memset',
+             'sigaction',
+             'drand48']
 
 foreach func : functions
   if compiler.has_function(func)

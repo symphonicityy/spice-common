@@ -27,6 +27,8 @@
 #include <unistd.h>
 #endif
 
+#include <common/recorder.h>
+
 #include "log.h"
 #include "backtrace.h"
 
@@ -154,6 +156,7 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
     if (!g_thread_supported())
         g_thread_init(NULL);
 #endif
+    recorder_dump_on_common_signals(0, 0);
 }
 
 static void spice_logv(const char *log_domain,

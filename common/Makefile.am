@@ -53,7 +53,17 @@ libspice_common_la_SOURCES =		\
 	utils.c				\
 	utils.h				\
 	verify.h			\
+	recorder.h			\
 	$(NULL)
+
+if ENABLE_RECORDER
+libspice_common_la_SOURCES += \
+	recorder/recorder.c		\
+	recorder/recorder.h		\
+	recorder/recorder_ring.c	\
+	recorder/recorder_ring.h	\
+	$(NULL)
+endif
 
 # These 2 files are not build as part of spice-common
 # build system, but modules using spice-common will build

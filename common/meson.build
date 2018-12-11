@@ -37,8 +37,18 @@ spice_common_sources = [
   'snd_codec.h',
   'utils.c',
   'utils.h',
-  'verify.h'
+  'verify.h',
+  'recorder.h'
 ]
+
+if get_option('recorder')
+  spice_common_sources += [
+    'recorder/recorder.c',
+    'recorder/recorder.h',
+    'recorder/recorder_ring.c',
+    'recorder/recorder_ring.h'
+  ]
+endif
 
 spice_common_lib = static_library('spice-common', spice_common_sources,
                                   install : false,

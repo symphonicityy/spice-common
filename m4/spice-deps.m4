@@ -358,3 +358,18 @@ AC_DEFUN([SPICE_CHECK_SASL], [
 AC_DEFUN([SPICE_CHECK_OPENSSL], [
     PKG_CHECK_MODULES(OPENSSL, openssl)
 ])
+
+# SPICE_CHECK_RECORDER
+# -----------------
+# Check for the availability of recorder library.
+#------------------
+AC_DEFUN([SPICE_CHECK_RECORDER], [
+    AC_ARG_ENABLE([recorder],
+      AS_HELP_STRING([--enable-recorder],
+                     [Enable recorder instrumentation @<:@default=no@:>@]),
+      [],
+      enable_recorder="no")
+    AS_IF([test "$enable_recorder" = "yes"],
+           AC_DEFINE([ENABLE_RECORDER], [1], [Define if recorder instrumentation is enabled]))
+    AM_CONDITIONAL([ENABLE_RECORDER],[test "$enable_recorder" = "yes"])
+])

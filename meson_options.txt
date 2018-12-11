@@ -20,6 +20,12 @@ option('opus',
     yield : true,
     description: 'Enable Opus audio codec')
 
+option('recorder',
+    type : 'boolean',
+    value : false,
+    yield : true,
+    description: 'Enable recorder instrumentation')
+
 option('smartcard',
     type : 'boolean',
     value : true,

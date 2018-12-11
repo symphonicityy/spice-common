@@ -13,7 +13,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Checks for programs
-AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign -Wall -Werror])
+AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign subdir-objects -Wall -Werror])
 AM_MAINTAINER_MODE
 AM_SILENT_RULES([yes])
 LT_INIT
@@ -26,6 +26,10 @@ if test "x$ac_cv_prog_cc_c99" = xno; then
 fi
 AM_PROG_CC_C_O
 
+AC_CHECK_HEADERS([sys/mman.h regex.h])
+AC_CHECK_FUNCS([sigaction drand48])
+AC_SEARCH_LIBS(regcomp, [regex rx])
+
 SPICE_CHECK_SYSDEPS
 SPICE_EXTRA_CHECKS
 
@@ -36,6 +40,8 @@ AC_ARG_ENABLE([alignment-checks],
   enable_alignment_checks="no")
 AS_IF([test "x$enable_alignment_checks" = "xyes"],
       [AC_DEFINE([SPICE_DEBUG_ALIGNMENT], 1, [Enable runtime checks for cast alignment])])
+
+SPICE_CHECK_RECORDER
 
 # Checks for libraries
 PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.12])

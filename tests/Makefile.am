@@ -66,6 +66,18 @@ test_region_LDADD =					\
 	$(SPICE_COMMON_LIBS)				\
 	$(NULL)
 
+TESTS += test_dummy_recorder
+
+test_dummy_recorder_SOURCES =		\
+	test-dummy-recorder.c		\
+	$(NULL)
+test_dummy_recorder_CFLAGS =		\
+	-I$(top_srcdir)			\
+	$(NULL)
+test_dummy_recorder_LDADD =				\
+	$(top_builddir)/common/libspice-common.la	\
+	$(NULL)
+
 # Avoid need for python(pyparsing) by end users
 TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\
