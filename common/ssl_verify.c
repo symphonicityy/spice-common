@@ -282,7 +282,7 @@ static X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
 {
     X509_NAME* in_subject;
     const char *p;
-    char *key, *val, *k, *v = NULL;
+    char *key, *val = NULL, *k, *v = NULL;
     enum {
         KEY,
         VALUE
@@ -291,11 +291,10 @@ static X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
     spice_return_val_if_fail(subject != NULL, NULL);
     spice_return_val_if_fail(nentries != NULL, NULL);
 
-    key = (char*)alloca(strlen(subject));
-    val = (char*)alloca(strlen(subject));
+    key = (char*)alloca(strlen(subject)+1);
     in_subject = X509_NAME_new();
 
-    if (!in_subject || !key || !val) {
+    if (!in_subject || !key) {
         spice_debug("failed to allocate");
         return NULL;
     }
@@ -328,6 +327,7 @@ static X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
             } else if (*p == '=' && !escape) {
                 state = VALUE;
                 *k = 0;
+                val = k + 1;
                 v = val;
             } else
                 *k++ = *p;
