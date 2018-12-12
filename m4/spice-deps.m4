@@ -114,7 +114,8 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
 #--------------------
 AC_DEFUN([SPICE_CHECK_CELT051], [
     AC_ARG_ENABLE([celt051],
-        [  --enable-celt051       Enable celt051 audio codec (disabled by default)],,
+        AS_HELP_STRING([--enable-celt051],
+                       [Enable celt051 audio codec @<:@default=auto@:>@]),,
         [enable_celt051="auto"])
 
     if test "x$enable_celt051" != "xno"; then
