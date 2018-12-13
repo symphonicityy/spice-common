@@ -1,6 +1,6 @@
 NULL =
 
-TESTS = test_logging test_marshallers
+TESTS = test_logging test_marshallers test_ssl_verify
 noinst_PROGRAMS = $(TESTS)
 
 test_logging_SOURCES = test-logging.c
@@ -102,5 +102,23 @@ EXTRA_DIST =				\
 	meson.build			\
 	test-marshallers.proto		\
 	$(NULL)
+
+
+test_ssl_verify_SOURCES =			\
+	test-ssl-verify.c			\
+	$(NULL)
+test_ssl_verify_CFLAGS =		\
+	-I$(top_srcdir)			\
+	$(GLIB2_CFLAGS)			\
+	$(PROTOCOL_CFLAGS)		\
+	$(OPENSSL_CFLAGS)		\
+	$(NULL)
+test_ssl_verify_LDADD =						\
+	$(top_builddir)/common/libspice-common-client.la	\
+	$(top_builddir)/common/libspice-common.la		\
+	$(GLIB2_LIBS)						\
+	$(OPENSSL_LIBS)						\
+	$(NULL)
+
 
 -include $(top_srcdir)/git.mk
