@@ -26,3 +26,19 @@ meson-makecheck:
     meson build -Dextra-checks=true -Dcelt051=enabled || (cat build/meson-logs/meson-log.txt && exit 1)
   - ninja -C build
   - (cd build && meson test) || (cat build/meson-logs/testlog.txt && exit 1)
+
+make-win:
+  script:
+  - >
+    dnf install mingw64-gcc mingw64-pkg-config mingw64-pixman mingw64-openssl
+    mingw64-opus mingw64-spice-protocol mingw64-glib2 mingw64-glib-networking mingw64-gdk-pixbuf
+    'wine-core(x86-64)'
+    -y
+  - NOCONFIGURE=yes ./autogen.sh
+  - >
+    PYTHON=python3
+    CFLAGS='-O2 -pipe -g -fsanitize=address -fno-omit-frame-pointer -Wframe-larger-than=40920'
+    LDFLAGS='-fsanitize=address -lasan'
+    mingw64-configure --enable-extra-checks --disable-celt051
+  - make
+  - make LOG_COMPILER=wine check || (cat tests/test-suite.log && exit 1)
