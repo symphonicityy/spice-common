@@ -32,7 +32,7 @@
 
 #define NUM_CHANNELS 3u
 
-void test_overflow(SpiceMarshaller *m)
+static void test_overflow(SpiceMarshaller *m)
 {
     SpiceMsgChannels *msg;
     uint8_t *data, *out;
