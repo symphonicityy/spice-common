@@ -92,7 +92,7 @@ uint8_t * spice_parse_msg(uint8_t *message_start, uint8_t *message_end,
                           uint32_t channel, uint16_t message_type, int minor,
                           size_t *size_out, message_destructor_t *free_message);
 
-int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
+int main(void)
 {
     SpiceMarshaller *marshaller;
     SpiceMsgMainShortDataSubMarshall *msg;
