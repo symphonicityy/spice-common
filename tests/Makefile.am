@@ -63,6 +63,7 @@ test_region_CFLAGS =			\
 	$(NULL)
 test_region_LDADD =					\
 	$(top_builddir)/common/libspice-common.la	\
+	$(SPICE_COMMON_LIBS)				\
 	$(NULL)
 
 # Avoid need for python(pyparsing) by end users
