@@ -37,7 +37,7 @@ void spice_log(GLogLevelFlags log_level,
                const char *strloc,
                const char *function,
                const char *format,
-               ...) SPICE_ATTR_PRINTF(4, 5);
+               ...) G_GNUC_PRINTF(4, 5);
 
 #define spice_return_if_fail(x) G_STMT_START {                          \
     if G_LIKELY(x) { } else {                                           \
