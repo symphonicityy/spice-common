@@ -1,18 +1,26 @@
 NULL =
-ASCIIDOC_FLAGS = -a icons -a toc
+CLEANFILES =
 
-EXTRA_DIST =					\
-	meson.build				\
+ASCIIDOC_FILES =				\
 	spice_protocol.txt			\
 	$(NULL)
 
+ASCIIDOC_FLAGS = -n -a icons -a toc
+
+EXTRA_DIST =					\
+	$(ASCIIDOC_FILES)			\
+	meson.build				\
+	$(NULL)
+
 if BUILD_HTML_MANUAL
-all-local: spice_protocol.html
+ASCIIDOC_HTML = $(ASCIIDOC_FILES:.txt=.html)
 
-spice_protocol.html: spice_protocol.txt
-	$(AM_V_GEN) $(ASCIIDOC) -n $(ASCIIDOC_FLAGS) -o $@ $<
+CLEANFILES += $(ASCIIDOC_HTML)
+
+all-local: $(ASCIIDOC_HTML)
+
+.txt.html:
+	$(AM_V_GEN)$(ASCIIDOC) $(ASCIIDOC_FLAGS) -o $@ $<
 endif
-
-CLEANFILES = spice_protocol.html
 
 -include $(top_srcdir)/git.mk
