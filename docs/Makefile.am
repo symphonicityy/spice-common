@@ -3,6 +3,7 @@ CLEANFILES =
 
 ASCIIDOC_FILES =				\
 	spice_protocol.txt			\
+	spice_uri_scheme.txt			\
 	$(NULL)
 
 ASCIIDOC_FLAGS = -n -a icons -a toc

@@ -1,0 +1,131 @@
+The "spice" URI scheme
+======================
+
+This document is inspired by 'The "vnc" URI Scheme' (rfc7869) and
+attempts to document a standard Spice URI scheme.
+
+The normative syntax of the Spice URI is defined in the <spice-uri>
+rule in the following syntax specification.  This specification
+uses the Augmented Backus-Naur Form (ABNF) as described in
+[RFC5234].  The Spice URI conforms to the generic URI syntax
+specified in [RFC3986].  The <userinfo>, <host>, <port>,
+<unreserved>, and <pct-encoded> rules are defined in [RFC3986].
+
+ spice-uri = spice-scheme "://" [ userinfo "@" ] [ host [ ":" port ] ]
+              [ "?" [ spice-params ] ]
+
+ spice-scheme = "spice" / "spice+unix" / "spice+tls"
+
+ spice-params = param "=" value *("&" param "=" value) ["&"]
+
+ param = 1*( param-char )
+
+ value = *( param-char )
+
+ param-char = unreserved / pct-encoded / unreserved-symbols
+
+ unreserved-symbols = ":" / "/" / "@" / "!" / "$" / "'"
+                       / "(" / ")" / "*" / "," / ";"
+
+The "?", "=", and "&" characters are used to delimit Spice parameters
+and must be percent-encoded when representing a data octet as
+specified in [RFC3986].  Within the <spice-params> portion of a Spice
+URI, the <unreserved-symbols> do not have special meaning and need not
+be percent-encoded when representing a data octet.
+
+A Spice URI has the general form:
+
+ spice-scheme://host:port?param1=value1&param2=value2...
+
+The host information and each parameter value specify information
+used in establishing or operating the remote desktop session as
+specified in Section "URI Parameters".
+
+URI Parameters
+--------------
+
+A description of host information and URI parameters is provided in
+this section.  Information on the constraints of various data types is
+provided in Section "Data Types".  All parameters are considered optional;
+however, a client will not be able to connect without sufficient
+information.
+
+A parameter without a specified default value indicates that no
+default value is implied by this URI scheme; however, Spice clients
+can apply implementation-dependent default behaviors otherwise
+consistent with this document.
+
+The <host> and <port> values in the "spice://" and "spice+tls://" URIs
+specify the address of the Spice server on the remote host:
+
+[options="header"]
+|=======================================================================
+| Name       | Type       | Description                     | Default
+| host       | string     | Spice server hostname or IP     | none
+| port       | ushort     | Spice server port               | none
+|=======================================================================
+
+The <host> value in the "spice+unix://" URI specify the UNIX domain
+socket path of the Spice server on the local host:
+
+[options="header"]
+|=======================================================================
+| Name       | Type       | Description                     | Default
+| host       | string     | UNIX domain socket path         | none
+|=======================================================================
+
+The Spice URI parameter values specify remote desktop connection or
+session properties, including aspects of client operation, usability,
+and security as specified in the table below:
+
+[options="header"]
+|=======================================================================
+| Name       | Type       | Description                     | Default
+| port       | ushort     | Spice server port (legacy)      | none
+| tls-port   | ushort     | Spice server TLS port (legacy)  | none
+| password   | string     | Spice server password (legacy)  | none
+| ...        |            |                                 |
+|=======================================================================
+
+Parameter names SHOULD be provided in the case specified in this
+document; however, for compatibility, clients SHOULD accept
+parameters in a case-insensitive manner.  Values SHALL be interpreted
+in a case-sensitive manner, unless otherwise noted.
+
+Additional parameters likely to be useful with multiple Spice clients
+can be added to the "URI Parameters" registry (at the moment,
+discussed and approved on the Spice mailing list).  Individual clients
+MAY support parameters specific to that client.  Spice clients
+supporting application-specific parameters SHOULD include a
+distinguishing prefix within the parameter name, such as the name of
+the application package specified in source code except when precluded
+by compatibility constraints.  For example:
+
+ spice://?com.redhat.spiceclient.MonitorMapping=2&
+
+It can also be expected that clients will maintain backward
+compatibility with legacy URI formats and parameters.
+
+Legacy software applications respond to "spice" URIs in different ways
+and may fail to behave as expected.  It is advisable to test "spice"
+URIs with specific applications or consult application-specific
+documentation.
+
+Data Types
+----------
+
+Spice URIs can be percent-encoded as specified in [RFC3986] and MUST
+be decoded.  After decoding, the following type constraints and
+semantics apply:
+
+string
+~~~~~~
+
+Values of "string" type are UTF8-encoded strings as specified in
+[RFC3629].
+
+ushort
+~~~~~~
+
+The "ushort" values represent unsigned 16-bit integers expressed
+in decimal digits with value between 0-65535 inclusive.
