@@ -126,6 +126,7 @@ int main(int argc, char *argv[])
     TEST_SUCCESS(quote2, "\\\\=a", "\\:a");
     TEST_SUCCESS(quote3, "a=\\,b,c=d", "a:,b:c:d");
     TEST_ERROR(quote4, ",", "");
+    TEST_ERROR(quote5, "a\\w=x", "");
 
     TEST_ERROR(no_value1, "a", "");
     TEST_ERROR(no_value2, "a,b=c", "");
