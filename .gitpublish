@@ -1,0 +1,3 @@
+[gitpublishprofile "default"]
+to = spice-devel@lists.freedesktop.org
+prefix = PATCH spice-common
