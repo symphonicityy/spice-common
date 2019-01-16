@@ -33,6 +33,9 @@ spice_common_config_data = configuration_data()
 if get_option('extra-checks')
   spice_common_config_data.set('ENABLE_EXTRA_CHECKS', '1')
 endif
+if host_machine.endian() == 'big'
+  spice_common_config_data.set('WORDS_BIGENDIAN', '1')
+endif
 
 spice_common_generate_code = get_option('generate-code')
 spice_common_generate_client_code = spice_common_generate_code == 'all' or spice_common_generate_code == 'client'
