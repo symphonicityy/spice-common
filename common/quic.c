@@ -692,7 +692,7 @@ static void fill_model_structures(SPICE_GNUC_UNUSED Encoder *encoder, FamilyStat
         bnumber++;
     } while (bend < levels - 1);
 
-    spice_assert(free_counter - family_stat->counters == nbuckets * ncounters);
+    spice_assert(free_counter - family_stat->counters == (ptrdiff_t)(nbuckets * ncounters));
 }
 
 static void find_model_params(Encoder *encoder,
