@@ -1,11 +1,3 @@
-# For autoconf < 2.63
-m4_ifndef([AS_VAR_APPEND],
-          AC_DEFUN([AS_VAR_APPEND], $1=$$1$2))
-m4_ifndef([AS_VAR_COPY],
-          [m4_define([AS_VAR_COPY],
-          [AS_LITERAL_IF([$1[]$2], [$1=$$2], [eval $1=\$$2])])])
-
-
 # SPICE_WARNING(warning)
 # SPICE_PRINT_MESSAGES
 # ----------------------
