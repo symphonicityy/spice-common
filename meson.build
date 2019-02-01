@@ -2,7 +2,7 @@
 # project definition
 #
 project('spice-common', 'c',
-         meson_version : '>= 0.47.0',
+         meson_version : '>= 0.48.0',
          license : 'LGPLv2.1')
 
 if not meson.is_subproject()
@@ -133,8 +133,8 @@ foreach dep, version : optional_deps
 endforeach
 
 # Python
-py_module = import('python3')
-python = py_module.find_python()
+py_module = import('python')
+python = py_module.find_installation()
 
 if get_option('python-checks')
   foreach module : ['six', 'pyparsing']
