@@ -27,8 +27,7 @@ option('recorder',
     description: 'Enable recorder instrumentation')
 
 option('smartcard',
-    type : 'boolean',
-    value : true,
+    type : 'feature',
     yield : true,
     description : 'Enable smartcard support')
 
