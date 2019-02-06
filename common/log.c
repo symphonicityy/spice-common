@@ -36,14 +36,6 @@
 
 SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 {
-    /* Threading is always enabled from 2.31.0 onwards */
-    /* Our logging is potentially used from different threads.
-     * Older glibs require that g_thread_init() is called when
-     * doing that. */
-#if !GLIB_CHECK_VERSION(2, 31, 0)
-    if (!g_thread_supported())
-        g_thread_init(NULL);
-#endif
     recorder_dump_on_common_signals(0, 0);
 }
 
