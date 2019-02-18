@@ -96,6 +96,12 @@ def fix_attributes(attribute_list):
         elif len(lst) > 1:
             raise Exception("Attribute %s has more than 1 argument" % name)
         attrs[name] = lst
+
+    # these attributes specify output format, only one can be set
+    output_attrs = set(['end', 'to_ptr', 'as_ptr', 'ptr_array', 'zero'])
+    if len(output_attrs.intersection(attrs.keys())) > 1:
+        raise Exception("Multiple output type attributes specified %s" % output_attrs)
+
     return attrs
 
 class Type:
