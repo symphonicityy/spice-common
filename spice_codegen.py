@@ -105,6 +105,30 @@ def write_enums(writer, describe=False):
 
     writer.writeln("#endif /* _H_SPICE_ENUMS */")
 
+def write_content(dest_file, content, keep_identical_file):
+    if keep_identical_file:
+        try:
+            f = open(dest_file, 'rb')
+            old_content = f.read()
+            f.close()
+
+            if content == old_content:
+                six.print_("No changes to %s" % dest_file)
+                return
+
+        except IOError:
+            pass
+
+    f = open(dest_file, 'wb')
+    if six.PY3:
+        f.write(bytes(content, 'UTF-8'))
+    else:
+        f.write(content)
+    f.close()
+
+    six.print_("Wrote %s" % dest_file)
+
+
 parser = OptionParser(usage="usage: %prog [options] <protocol_file> <destination file>")
 parser.add_option("-e", "--generate-enums",
                   action="store_true", dest="generate_enums", default=False,
@@ -286,25 +310,5 @@ if options.header:
     content = writer.header.getvalue()
 else:
     content = writer.getvalue()
-if options.keep_identical_file:
-    try:
-        f = open(dest_file, 'rb')
-        old_content = f.read()
-        f.close()
-
-        if content == old_content:
-            six.print_("No changes to %s" % dest_file)
-            sys.exit(0)
-
-    except IOError:
-        pass
-
-f = open(dest_file, 'wb')
-if six.PY3:
-    f.write(bytes(content, 'UTF-8'))
-else:
-    f.write(content)
-f.close()
-
-six.print_("Wrote %s" % dest_file)
+write_content(dest_file, content, options.keep_identical_file)
 sys.exit(0)
