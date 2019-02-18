@@ -55,6 +55,9 @@ valid_attributes=set([
     'nonnull',
     # this flag member contains only a single flag
     'unique_flag',
+    # represent array as an array of pointers (in the C structure)
+    # for instance a "Type name[size] @ptr_array" in the protocol
+    # will be stored in a "Type *name[0]" field in the C structure
     'ptr_array',
     'outvar',
     # C structure has an anonymous member (used in switch)
