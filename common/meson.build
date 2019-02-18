@@ -64,7 +64,15 @@ spice_common_dep = declare_dependency(link_with : spice_common_lib,
 #
 if spice_common_generate_client_code
   targets = [
-    ['client_demarshallers', spice_proto, 'generated_client_demarshallers.c', ['--generate-demarshallers', '--client', '--include', 'common/messages.h', '@INPUT@', '@OUTPUT@']],
+    ['client_demarshallers', spice_proto,
+      ['generated_client_demarshallers.c', 'generated_messages.h'],
+      ['--generate-demarshallers',
+        '--client',
+        '--include', 'common/messages.h',
+        '--generated-declaration-file', '@OUTPUT1@',
+        '@INPUT@', '@OUTPUT0@'
+      ]
+    ],
     ['client_marshallers', spice_proto,
       ['generated_client_marshallers.c', 'generated_client_marshallers.h'],
       ['--generate-marshallers', '--generate-header',

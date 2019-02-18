@@ -558,6 +558,8 @@ typedef struct SpiceMsgDisplayGlDraw {
     uint32_t h;
 } SpiceMsgDisplayGlDraw;
 
+#include <common/generated_messages.h>
+
 SPICE_END_DECLS
 
 #endif // H_SPICE_COMMON_MESSAGES
