@@ -920,8 +920,7 @@ class MessageType(ContainerType):
                 channelname = ""
             if cm.is_server:
                 return codegen.prefix_camel("Msg", channelname, cm.name)
-            else:
-                return codegen.prefix_camel("Msgc", channelname, cm.name)
+            return codegen.prefix_camel("Msgc", channelname, cm.name)
         else:
             return codegen.prefix_camel("Msg", self.name)
 
