@@ -176,6 +176,8 @@ parser.add_option("--license", dest="license",
 parser.add_option("--generate-header",
                   action="store_true", dest="generate_header", default=False,
                   help="Generate also the header")
+parser.add_option("--generated-declaration-file", dest="generated_declaration_file", metavar="FILE",
+                  help="Name of the file to generate declarations")
 
 (options, args) = parser.parse_args()
 
@@ -256,6 +258,51 @@ elif options.license == "BSD":
 else:
     print >> sys.stderr, "Invalid license specified: %s" % options.license
     sys.exit(1)
+
+all_structures = {}
+def generate_declaration(t, writer_top):
+    writer = codegen.CodeWriter()
+    try:
+        c_type = t.c_type()
+        t.generate_c_declaration(writer)
+        value = writer.getvalue().strip()
+        if not value:
+            return
+        if c_type in all_structures:
+            assert all_structures[c_type] == value, """Structure %s redefinition
+previous:
+%s
+---
+current:
+%s
+---""" % (c_type, all_structures[c_type], value)
+        else:
+            all_structures[c_type] = value
+            t.generate_c_declaration(writer_top)
+    except:
+        print >> sys.stderr, 'type %s' % t
+        print >> sys.stderr, writer.getvalue()
+        traceback.print_exc(sys.stderr)
+
+def generate_declarations():
+    writer = codegen.CodeWriter()
+    writer.public_suffix = options.suffix
+    writer.write(license)
+
+    # all types
+    for t in ptypes.get_named_types():
+        if isinstance(t, ptypes.StructType):
+            generate_declaration(t, writer)
+        if isinstance(t, ptypes.ChannelType):
+            for m in t.client_messages + t.server_messages:
+                generate_declaration(m.message_type, writer)
+
+    content = writer.getvalue()
+    write_content(options.generated_declaration_file, content,
+                  options.keep_identical_file)
+
+if options.generated_declaration_file:
+    generate_declarations()
 
 writer.public_suffix = options.suffix
 

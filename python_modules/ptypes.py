@@ -70,6 +70,8 @@ valid_attributes=set([
     'zero',
     # this attribute does not exist on the network, fill just structure with the value
     'virtual',
+    # generate C structure declarations from protocol definition
+    'declare',
 ])
 
 attributes_with_arguments=set([
@@ -483,6 +485,26 @@ class ArrayType(Type):
     def c_type(self):
         return self.element_type.c_type()
 
+    def generate_c_declaration(self, writer, member):
+        name = member.name
+        if member.has_attr("chunk"):
+            return writer.writeln('SpiceChunks *%s;' % name)
+        if member.has_attr("as_ptr"):
+            len_var = member.attributes["as_ptr"][0]
+            writer.writeln('uint32_t %s;' % len_var)
+            return writer.writeln('%s *%s;' % (self.c_type(), name))
+        if member.has_attr("to_ptr"):
+            return writer.writeln('%s *%s;' % (self.c_type(), name))
+        if member.has_attr("ptr_array"):
+            return writer.writeln('%s *%s[0];' % (self.c_type(), name))
+        if member.has_end_attr() or self.is_remaining_length():
+            return writer.writeln('%s %s[0];' % (self.c_type(), name))
+        if self.is_constant_length():
+            return writer.writeln('%s %s[%s];' % (self.c_type(), name, self.size))
+        if self.is_identifier_length():
+            return writer.writeln('%s *%s;' % (self.c_type(), name))
+        raise NotImplementedError('unknown array %s' % str(self))
+
 class PointerType(Type):
     def __init__(self, target_type):
         Type.__init__(self)
@@ -516,6 +538,15 @@ class PointerType(Type):
 
     def get_num_pointers(self):
         return 1
+
+    def generate_c_declaration(self, writer, member):
+        target_type = self.target_type
+        is_array = target_type.is_array()
+        if not is_array or target_type.is_identifier_length():
+            writer.writeln("%s *%s;" % (target_type.c_type(), member.name))
+            return
+        raise NotImplementedError('Some pointers to array declarations are not implemented %s' %
+member)
 
 class Containee:
     def __init__(self):
@@ -611,6 +642,14 @@ class Member(Containee):
             prefix = self.attributes["outvar"][0]
             names = [prefix + "_" + name for name in names]
         return names
+
+    def generate_c_declaration(self, writer):
+        if self.has_attr("zero"):
+            return
+        if self.is_pointer() or self.is_array():
+            self.member_type.generate_c_declaration(writer, self)
+            return
+        return writer.writeln("%s %s;" % (self.member_type.c_type(), self.name))
 
 class SwitchCase:
     def __init__(self, values, member):
@@ -735,6 +774,17 @@ class Switch(Containee):
             names = names + c.get_pointer_names(marshalled)
         return names
 
+    def generate_c_declaration(self, writer):
+        if self.has_attr("anon") and len(self.cases) == 1:
+            self.cases[0].member.generate_c_declaration(writer)
+            return
+        writer.writeln('union {')
+        writer.indent()
+        for m in self.cases:
+            m.member.generate_c_declaration(writer)
+        writer.unindent()
+        writer.writeln('} %s;' % self.name)
+
 class ContainerType(Type):
     def is_fixed_sizeof(self):
         for m in self.members:
@@ -844,6 +894,20 @@ class ContainerType(Type):
             return member.member_type.lookup_member(rest)
 
         return member
+
+    def generate_c_declaration(self, writer):
+        if not self.has_attr('declare'):
+            return
+        name = self.c_type()
+        writer.writeln('typedef struct %s {' % name)
+        writer.indent()
+        for m in self.members:
+            m.generate_c_declaration(writer)
+        if len(self.members) == 0:
+            # make sure generated structure are not empty
+            writer.writeln("char dummy[0];")
+        writer.unindent()
+        writer.writeln('} %s;' % name).newline()
 
 class StructType(ContainerType):
     def __init__(self, name, members, attribute_list):
