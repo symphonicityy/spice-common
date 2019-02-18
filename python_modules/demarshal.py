@@ -810,6 +810,8 @@ def write_array_parser(writer, member, nelements, array, dest, scope):
         at_end = True
 
     if element_type == ptypes.uint8 or element_type == ptypes.int8:
+        if array.has_attr("ptr_array"):
+            raise Exception("Attribute ptr_array not supported for arrays of int8/uint8")
         writer.statement("memcpy(%s, in, %s)" % (array_start, nelements))
         writer.increment("in", nelements)
         if at_end:
