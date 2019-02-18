@@ -43,7 +43,6 @@
 SPICE_BEGIN_DECLS
 
 typedef struct SpiceMsgData {
-    uint32_t data_size;
     uint8_t data[0];
 } SpiceMsgData;
 
@@ -75,9 +74,6 @@ typedef struct SpiceMigrationDstInfo {
     uint16_t sport;
     uint32_t host_size;
     uint8_t *host_data;
-    uint16_t pub_key_type;
-    uint32_t pub_key_size;
-    uint8_t *pub_key_data;
     uint32_t cert_subject_size;
     uint8_t *cert_subject_data;
 } SpiceMigrationDstInfo;
