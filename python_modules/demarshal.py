@@ -847,7 +847,7 @@ def write_array_parser(writer, member, nelements, array, dest, scope):
                     write_container_parser(writer, element_type, dest2)
                 if array.has_attr("ptr_array"):
                     writer.comment("Align ptr_array element to 4 bytes").newline()
-                    writer.assign("end", "(uint8_t *)SPICE_ALIGN((size_t)end, 4)")
+                    writer.assign("end", "(uint8_t *)SPICE_ALIGN((uintptr_t)end, 4)")
 
 def write_parse_pointer_core(writer, target_type, offset, at_end, dest, member_name, scope):
     writer.assign("ptr_info[n_ptr].offset", offset)
@@ -968,7 +968,7 @@ def write_ptr_info_check(writer):
                 writer.assign("*%s" % dest, "NULL")
             with writer.block(" else"):
                 writer.comment("Align to 32 bit").newline()
-                writer.assign("end", "(uint8_t *)SPICE_ALIGN((size_t)end, 4)")
+                writer.assign("end", "(uint8_t *)SPICE_ALIGN((uintptr_t)end, 4)")
                 writer.assign("*%s" % dest, "(void *)end")
                 writer.assign("end", "%s(message_start, message_end, end, &ptr_info[%s])" % (function, index))
                 writer.error_check("end == NULL")
