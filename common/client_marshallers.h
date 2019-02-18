@@ -21,9 +21,9 @@
 
 #include <spice/protocol.h>
 
+#include "messages.h"
 #include "common/generated_client_marshallers.h"
 #include "marshaller.h"
-#include "messages.h"
 
 SPICE_BEGIN_DECLS
 

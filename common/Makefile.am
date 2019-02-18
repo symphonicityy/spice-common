@@ -112,21 +112,17 @@ MARSHALLERS_DEPS =					\
 generated_client_demarshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --client --include common/messages.h $< $@ >/dev/null
 
-generated_client_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --client --include common/messages.h -H $< $@ >/dev/null
-
-generated_client_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include client_marshallers.h --client $< $@ >/dev/null
+generated_client_marshallers.c generated_client_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include client_marshallers.h --client \
+	--generate-header $< $@ >/dev/null
 
 generated_server_demarshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --server --include common/messages.h $< $@ >/dev/null
 
 STRUCTS = -M String -M Rect -M Point -M DisplayBase -M Fill -M Opaque -M Copy -M Blend -M Blackness -M Whiteness -M Invers -M Rop3 -M Stroke -M Text -M Transparent -M AlphaBlend -M Composite
-generated_server_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include common/messages.h $< $@ >/dev/null
-
-generated_server_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include common/messages.h -H $< $@ >/dev/null
+generated_server_marshallers.c generated_server_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include common/messages.h \
+    --generate-header $< $@ >/dev/null
 
 EXTRA_DIST =				\
 	$(CLIENT_MARSHALLERS)		\

@@ -65,8 +65,13 @@ spice_common_dep = declare_dependency(link_with : spice_common_lib,
 if spice_common_generate_client_code
   targets = [
     ['client_demarshallers', spice_proto, 'generated_client_demarshallers.c', ['--generate-demarshallers', '--client', '--include', 'common/messages.h', '@INPUT@', '@OUTPUT@']],
-    ['client_marshalers', spice_proto, 'generated_client_marshallers.c', ['--generate-marshallers', '-P', '--client', '--include', 'client_marshallers.h', '@INPUT@', '@OUTPUT@']],
-    ['client_marshallers_h', spice_proto, 'generated_client_marshallers.h', ['--generate-marshallers', '-P', '--client', '--include', 'common/messages.h', '-H', '@INPUT@', '@OUTPUT@']],
+    ['client_marshallers', spice_proto,
+      ['generated_client_marshallers.c', 'generated_client_marshallers.h'],
+      ['--generate-marshallers', '--generate-header',
+        '-P', '--client', '--include', 'client_marshallers.h',
+        '@INPUT@', '@OUTPUT0@'
+      ]
+    ]
   ]
 
   spice_common_client_sources = [
@@ -116,8 +121,12 @@ if spice_common_generate_server_code
 
   targets = [
     ['server_demarshallers', spice_proto, 'generated_server_demarshallers.c', ['--generate-demarshallers', '--server', '--include', 'common/messages.h', '@INPUT@', '@OUTPUT@']],
-    ['server_marshallers', spice_proto, 'generated_server_marshallers.c', ['--generate-marshallers', '--server'] + structs_args + ['--include', 'common/messages.h', '@INPUT@', '@OUTPUT@']],
-    ['server_marshallers_h', spice_proto, 'generated_server_marshallers.h', ['--generate-marshallers', '--server'] + structs_args + ['--include', 'common/messages.h', '-H', '@INPUT@', '@OUTPUT@']],
+    ['server_marshallers', spice_proto,
+      ['generated_server_marshallers.c', 'generated_server_marshallers.h'],
+      ['--generate-marshallers', '--generate-header',
+        '--server'] + structs_args + ['--include', 'common/messages.h', '@INPUT@', '@OUTPUT0@'
+      ]
+    ],
   ]
 
   spice_common_server_sources = []
