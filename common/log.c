@@ -21,12 +21,6 @@
 
 #include <glib.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-
 #include <common/recorder.h>
 
 #include "log.h"
