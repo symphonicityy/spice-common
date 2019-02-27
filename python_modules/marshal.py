@@ -234,7 +234,7 @@ def write_array_marshaller(writer, member, array, container_src, scope):
 def write_pointer_marshaller(writer, member, src):
     t = member.member_type
     ptr_func = write_marshal_ptr_function(writer, t.target_type)
-    submarshaller = "spice_marshaller_get_ptr_submarshaller(m, %d)" % (1 if member.get_fixed_nw_size() == 8 else 0)
+    submarshaller = "spice_marshaller_get_ptr_submarshaller(m)"
     if member.has_attr("marshall"):
         rest_args = ""
         if t.target_type.is_array():

@@ -147,8 +147,6 @@ parser.add_option("-i", "--include",
                   help="Include FILE in generated code")
 parser.add_option("--prefix", dest="prefix",
                   help="set public symbol prefix", default="")
-parser.add_option("--ptrsize", dest="ptrsize",
-                  help="set default pointer size", default="4")
 parser.add_option("--license", dest="license",
                   help="license to use for generated file(s) (LGPL/BSD)", default="LGPL")
 
@@ -159,8 +157,6 @@ if len(args) == 0:
 
 if len(args) == 1:
     parser.error("No destination file specified")
-
-ptypes.default_pointer_size = int(options.ptrsize)
 
 proto_file = args[0]
 dest_file = args[1]

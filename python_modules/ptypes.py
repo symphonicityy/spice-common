@@ -4,8 +4,6 @@ import types
 _types_by_name = {}
 _types = []
 
-default_pointer_size = 4
-
 def type_exists(name):
     return name in _types_by_name
 
@@ -490,7 +488,6 @@ class PointerType(Type):
         Type.__init__(self)
         self.name = None
         self.target_type = target_type
-        self.pointer_size = default_pointer_size
 
     def __str__(self):
         return "%s*" % (str(self.target_type))
@@ -499,9 +496,6 @@ class PointerType(Type):
         self.target_type = self.target_type.resolve()
         return self
 
-    def set_ptr_size(self, new_size):
-        self.pointer_size = new_size
-
     def is_fixed_nw_size(self):
         return True
 
@@ -509,19 +503,13 @@ class PointerType(Type):
         return True
 
     def primitive_type(self):
-        if self.pointer_size == 4:
-            return "uint32"
-        else:
-            return "uint64"
+        return "uint32"
 
     def get_fixed_nw_size(self):
-        return self.pointer_size
+        return 4
 
     def c_type(self):
-        if self.pointer_size == 4:
-            return "uint32_t"
-        else:
-            return "uint64_t"
+        return "uint32_t"
 
     def contains_extra_size(self):
         return True

@@ -96,7 +96,6 @@ typedef struct SpiceMarshallerData SpiceMarshallerData;
 typedef struct {
     SpiceMarshaller *marshaller;
     int item_nr;
-    int is_64bit;
     size_t offset;
 } MarshallerRef;
 
@@ -419,13 +418,13 @@ SpiceMarshaller *spice_marshaller_get_submarshaller(SpiceMarshaller *m)
     return m2;
 }
 
-SpiceMarshaller *spice_marshaller_get_ptr_submarshaller(SpiceMarshaller *m, int is_64bit)
+SpiceMarshaller *spice_marshaller_get_ptr_submarshaller(SpiceMarshaller *m)
 {
     SpiceMarshaller *m2;
     uint8_t *p;
     int size;
 
-    size = is_64bit ? 8 : 4;
+    size = 4;
 
     p = spice_marshaller_reserve_space(m, size);
     memset(p, 0, size);
@@ -433,7 +432,6 @@ SpiceMarshaller *spice_marshaller_get_ptr_submarshaller(SpiceMarshaller *m, int 
     m2->pointer_ref.marshaller = m;
     m2->pointer_ref.item_nr = m->n_items - 1;
     m2->pointer_ref.offset = m->items[m->n_items - 1].len - size;
-    m2->pointer_ref.is_64bit = is_64bit;
 
     return m2;
 }
@@ -538,13 +536,7 @@ void spice_marshaller_flush(SpiceMarshaller *m)
     for (m2 = m; m2 != NULL; m2 = m2->next) {
         if (m2->pointer_ref.marshaller != NULL && m2->total_size > 0) {
             ptr_pos = lookup_ref(&m2->pointer_ref);
-            if (m2->pointer_ref.is_64bit) {
-                write_uint64(ptr_pos,
-                             spice_marshaller_get_offset(m2));
-            } else {
-                write_uint32(ptr_pos,
-                             spice_marshaller_get_offset(m2));
-            }
+            write_uint32(ptr_pos, spice_marshaller_get_offset(m2));
         }
     }
 }

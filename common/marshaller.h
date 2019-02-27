@@ -53,7 +53,7 @@ size_t spice_marshaller_get_offset(SpiceMarshaller *m);
 size_t spice_marshaller_get_size(SpiceMarshaller *m);
 size_t spice_marshaller_get_total_size(SpiceMarshaller *m);
 SpiceMarshaller *spice_marshaller_get_submarshaller(SpiceMarshaller *m);
-SpiceMarshaller *spice_marshaller_get_ptr_submarshaller(SpiceMarshaller *m, int is_64bit);
+SpiceMarshaller *spice_marshaller_get_ptr_submarshaller(SpiceMarshaller *m);
 int spice_marshaller_fill_iovec(SpiceMarshaller *m, struct iovec *vec,
                                 int n_vec, size_t skip_bytes);
 void *spice_marshaller_add_uint64(SpiceMarshaller *m, uint64_t v);
