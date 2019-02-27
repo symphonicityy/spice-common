@@ -1235,6 +1235,9 @@ channel RecordChannel : BaseChannel {
     } start_mark;
 };
 
+channel TunnelChannel {
+};
+
 enum32 vsc_message_type {
     Init = 1,
     Error,
@@ -1357,8 +1360,8 @@ protocol Spice {
     CursorChannel cursor;
     PlaybackChannel playback;
     RecordChannel record;
-    // there used to be a TunnelChannel
-    SmartcardChannel smartcard = 8;
+    TunnelChannel tunnel;
+    SmartcardChannel smartcard;
     UsbredirChannel usbredir;
     PortChannel port;
     WebDAVChannel webdav;
