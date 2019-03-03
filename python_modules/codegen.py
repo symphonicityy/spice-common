@@ -117,7 +117,7 @@ class CodeWriter:
         writer.index_type = self.index_type
         writer.generated = self.generated
         writer.options = self.options
-        writer.public_prefix = self.public_prefix
+        writer.public_suffix = self.public_suffix
 
         return writer
 

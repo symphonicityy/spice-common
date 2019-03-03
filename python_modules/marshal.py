@@ -412,10 +412,10 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
         writer.header.end_block(newline=False)
         writer.header.writeln(" SpiceMessageMarshallers;")
         writer.header.newline()
-        writer.header.statement("SpiceMessageMarshallers *spice_message_marshallers_get" + writer.public_prefix+"(void)")
+        writer.header.statement("SpiceMessageMarshallers *spice_message_marshallers_get" + writer.public_suffix+"(void)")
         writer.header.newline()
 
-        scope = writer.function("spice_message_marshallers_get" +  writer.public_prefix,
+        scope = writer.function("spice_message_marshallers_get" +  writer.public_suffix,
                                 "SpiceMessageMarshallers *",
                                 "void")
         writer.writeln("static SpiceMessageMarshallers marshallers = {NULL};").newline()
