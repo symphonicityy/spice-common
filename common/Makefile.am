@@ -138,7 +138,6 @@ EXTRA_DIST =				\
 	lz_decompress_tmpl.c		\
 	quic_family_tmpl.c		\
 	quic_tmpl.c			\
-	snd_codec.h			\
 	$(NULL)
 
 -include $(top_srcdir)/git.mk
