@@ -25,6 +25,8 @@
 #include <config.h>
 #endif
 
+#include "backtrace.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
