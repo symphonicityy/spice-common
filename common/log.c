@@ -33,6 +33,7 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
     recorder_dump_on_common_signals(0, 0);
 }
 
+G_GNUC_PRINTF(5, 0)
 static void spice_logv(const char *log_domain,
                        GLogLevelFlags log_level,
                        const char *strloc,

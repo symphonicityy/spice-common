@@ -27,6 +27,7 @@
 
 #define OTHER_LOG_DOMAIN "Other"
 #define LOG_OTHER_HELPER(suffix, level)                                          \
+    G_GNUC_PRINTF(1, 2)                                                          \
     static void G_PASTE(other_, suffix)(const gchar *format, ...)                \
     {                                                                            \
         va_list args;                                                            \
