@@ -1,6 +1,7 @@
-#include <stdint.h>
+#ifndef H_SPICE_COMMON_TEST_MARSHALLERS
+#define H_SPICE_COMMON_TEST_MARSHALLERS
 
-#ifndef _H_TEST_MARSHALLERS
+#include <stdint.h>
 
 typedef struct {
     uint32_t data_size;
@@ -26,5 +27,5 @@ typedef struct {
     uint8_t data[0];
 } SpiceMsgMainLenMessage;
 
-#endif /* _H_TEST_MARSHALLERS */
+#endif /* H_SPICE_COMMON_TEST_MARSHALLERS */
 
