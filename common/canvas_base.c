@@ -1880,11 +1880,11 @@ static void canvas_clip_pixman(CanvasBase *canvas,
         uint32_t n = clip->rects->num_rects;
         SpiceRect *now = clip->rects->rects;
 
-        pixman_region32_t clip;
+        pixman_region32_t pixman_clip;
 
-        if (spice_pixman_region32_init_rects(&clip, now, n)) {
-            pixman_region32_intersect(dest_region, dest_region, &clip);
-            pixman_region32_fini(&clip);
+        if (spice_pixman_region32_init_rects(&pixman_clip, now, n)) {
+            pixman_region32_intersect(dest_region, dest_region, &pixman_clip);
+            pixman_region32_fini(&pixman_clip);
         }
 
         break;
