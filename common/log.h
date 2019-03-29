@@ -39,16 +39,18 @@ void spice_log(GLogLevelFlags log_level,
                const char *format,
                ...) G_GNUC_PRINTF(4, 5);
 
+/* FIXME: name is misleading, this aborts.. */
 #define spice_return_if_fail(x) G_STMT_START {                          \
     if G_LIKELY(x) { } else {                                           \
-        spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, G_STRFUNC, "condition `%s' failed", #x); \
+        spice_critical("condition `%s' failed", #x);                    \
         return;                                                         \
     }                                                                   \
 } G_STMT_END
 
+/* FIXME: name is misleading, this aborts.. */
 #define spice_return_val_if_fail(x, val) G_STMT_START {                 \
     if G_LIKELY(x) { } else {                                           \
-        spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, "condition `%s' failed", #x); \
+        spice_critical("condition `%s' failed", #x);                    \
         return (val);                                                   \
     }                                                                   \
 } G_STMT_END
@@ -71,10 +73,12 @@ void spice_log(GLogLevelFlags log_level,
 
 #define spice_critical(format, ...) G_STMT_START {                          \
     spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
+    SPICE_UNREACHABLE;                                                                      \
 } G_STMT_END
 
 #define spice_error(format, ...) G_STMT_START {                         \
     spice_log(G_LOG_LEVEL_ERROR, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
+    SPICE_UNREACHABLE;                                                                   \
 } G_STMT_END
 
 #define spice_warn_if_fail(x) G_STMT_START {            \

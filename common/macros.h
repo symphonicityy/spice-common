@@ -55,4 +55,12 @@
 
 #define SPICE_VERIFY(cond) verify_expr(cond, (void)1)
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#define SPICE_UNREACHABLE __builtin_unreachable()
+#elif defined(_MSC_VER)
+#define SPICE_UNREACHABLE __assume(0)
+#else
+#define SPICE_UNREACHABLE for(;;) continue
+#endif
+
 #endif // H_SPICE_COMMON_MACROS
