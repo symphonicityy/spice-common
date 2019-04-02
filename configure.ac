@@ -27,7 +27,7 @@ fi
 AM_PROG_CC_C_O
 
 AC_CHECK_HEADERS([sys/mman.h regex.h])
-AC_CHECK_FUNCS([sigaction drand48])
+AC_CHECK_FUNCS([sigaction drand48 setlinebuf])
 AC_SEARCH_LIBS(regcomp, [regex rx])
 
 SPICE_CHECK_SYSDEPS

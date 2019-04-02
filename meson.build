@@ -78,7 +78,8 @@ endforeach
 #
 functions = ['alloca',
              'sigaction',
-             'drand48']
+             'drand48',
+             'setlinebuf']
 
 foreach func : functions
   if compiler.has_function(func)
