@@ -1222,7 +1222,7 @@ channel RecordChannel : BaseChannel {
     message {
         uint32 time;
         uint8 data[] @nomarshal @as_ptr(data_size);
-    } @ctype(SpiceMsgcPlaybackPacket) @declare data = 101;
+    } @ctype(SpiceMsgPlaybackPacket) @declare data = 101;
 
     message {
         uint32 time;
