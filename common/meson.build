@@ -106,7 +106,7 @@ if spice_common_generate_client_code
                                            install : false,
                                            dependencies : spice_common_dep)
 
-  spice_common_client_dep = declare_dependency(sources : client_marshallers,
+  spice_common_client_dep = declare_dependency(sources : client_marshallers[1],
                                                link_with : spice_common_client_lib,
                                                dependencies : spice_common_dep)
 endif
@@ -164,7 +164,7 @@ if spice_common_generate_server_code
                                            install : false,
                                            dependencies : spice_common_dep)
 
-  spice_common_server_dep = declare_dependency(sources : target,
+  spice_common_server_dep = declare_dependency(sources : target[1],
                                                link_with : spice_common_server_lib,
                                                dependencies : spice_common_dep)
 endif
