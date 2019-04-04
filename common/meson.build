@@ -136,35 +136,47 @@ if spice_common_generate_server_code
   ]
 
   targets = [
-    ['server_demarshallers', [ spice_proto, client_demarshallers ],
-      ['generated_server_demarshallers.c'],
-      ['--generate-demarshallers', '--server', '--include', 'common/messages.h', '@INPUT0@', '@OUTPUT0@']
-    ],
-    ['server_marshallers', [ spice_proto, client_demarshallers ],
-      ['generated_server_marshallers.c', 'generated_server_marshallers.h'],
-      ['--generate-marshallers', '--generate-header',
-        '--server'] + structs_args + ['--include', 'common/messages.h', '@INPUT0@', '@OUTPUT0@'
-      ]
-    ],
+    { 'name' : 'server_demarshallers',
+      'input' : [ spice_proto, client_demarshallers ],
+      'output' : ['generated_server_demarshallers.c'],
+      'codegen_args' : ['--generate-demarshallers',
+                        '--server',
+                        '--include', 'common/messages.h',
+                        '@INPUT0@', '@OUTPUT0@'],
+    },
+    { 'name' : 'server_marshallers',
+      'input' : [ spice_proto, client_demarshallers ],
+      'output' : ['generated_server_marshallers.c', 'generated_server_marshallers.h'],
+      'codegen_args' : ['--generate-marshallers',
+                        '--generate-header',
+                        '--server',
+                        structs_args,
+                        '--include', 'common/messages.h',
+                        '@INPUT0@', '@OUTPUT0@']
+    },
   ]
 
   spice_common_server_sources = []
+  spice_common_server_dep_sources = []
 
   foreach t : targets
-    target = custom_target(t[0],
-                           input : t[1],
-                           output : t[2],
+    target = custom_target(t['name'],
+                           input : t['input'],
+                           output : t['output'],
                            install : false,
-                           command : [codegen_cmd, t[3]],
+                           command : [codegen_cmd, t['codegen_args']],
                            depend_files : [spice_codegen_files, 'messages.h'])
     spice_common_server_sources += target
+    if t['output'].length() > 1
+      spice_common_server_dep_sources += target[1]
+    endif
   endforeach
 
   spice_common_server_lib = static_library('spice-common-server', spice_common_server_sources,
                                            install : false,
                                            dependencies : spice_common_dep)
 
-  spice_common_server_dep = declare_dependency(sources : target[1],
+  spice_common_server_dep = declare_dependency(sources : spice_common_server_dep_sources,
                                                link_with : spice_common_server_lib,
                                                dependencies : spice_common_dep)
 endif
