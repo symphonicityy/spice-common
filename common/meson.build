@@ -59,46 +59,54 @@ spice_common_dep = declare_dependency(link_with : spice_common_lib,
                                       include_directories : spice_common_include,
                                       dependencies : spice_common_deps)
 
+
+# client_demarshallers
+codegen_cmd = [python, spice_codegen]
+codegen_args = ['--generate-demarshallers',
+                '--client',
+                '--include', 'common/messages.h',
+                '--generated-declaration-file', '@OUTPUT1@',
+                '@INPUT@', '@OUTPUT0@']
+
+client_demarshallers = custom_target('client_demarshallers',
+                                     input : [spice_proto],
+                                     output : ['generated_client_demarshallers.c', 'generated_messages.h'],
+                                     install : false,
+                                     command : [codegen_cmd, codegen_args],
+                                     depend_files : [spice_codegen_files, 'messages.h'])
+
 #
 # libspice-common-client
 #
 if spice_common_generate_client_code
-  targets = [
-    ['client_demarshallers', spice_proto,
-      ['generated_client_demarshallers.c', 'generated_messages.h'],
-      ['--generate-demarshallers',
-        '--client',
-        '--include', 'common/messages.h',
-        '--generated-declaration-file', '@OUTPUT1@',
-        '@INPUT@', '@OUTPUT0@'
-      ]
-    ],
-    ['client_marshallers', spice_proto,
-      ['generated_client_marshallers.c', 'generated_client_marshallers.h'],
-      ['--generate-marshallers', '--generate-header',
-        '-P', '--client', '--include', 'client_marshallers.h',
-        '@INPUT@', '@OUTPUT0@'
-      ]
-    ]
-  ]
+  # client_marshallers
+  codegen_args = ['--generate-marshallers',
+                  '--generate-header',
+                  '-P',
+                  '--client',
+                  '--include', 'common/client_marshallers.h',
+                  '@INPUT0@', '@OUTPUT0@']
+
+  client_marshallers = custom_target('client_marshallers',
+                                     input : [spice_proto, client_demarshallers],
+                                     output : ['generated_client_marshallers.c', 'generated_client_marshallers.h'],
+                                     install : false,
+                                     command : [codegen_cmd, codegen_args],
+                                     depend_files : [spice_codegen_files, 'client_marshallers.h'])
 
   spice_common_client_sources = [
+    client_demarshallers,
+    client_marshallers,
     'client_marshallers.h',
     'ssl_verify.c',
     'ssl_verify.h',
   ]
 
-  foreach t : targets
-    cmd = [python, spice_codegen] + t[3]
-    target = custom_target(t[0], input : t[1], output : t[2], install : false, command : cmd, depend_files : spice_codegen_files)
-    spice_common_client_sources += target
-  endforeach
-
   spice_common_client_lib = static_library('spice-common-client', spice_common_client_sources,
                                            install : false,
                                            dependencies : spice_common_dep)
 
-  spice_common_client_dep = declare_dependency(sources : target,
+  spice_common_client_dep = declare_dependency(sources : client_marshallers,
                                                link_with : spice_common_client_lib,
                                                dependencies : spice_common_dep)
 endif
@@ -128,11 +136,14 @@ if spice_common_generate_server_code
   ]
 
   targets = [
-    ['server_demarshallers', spice_proto, 'generated_server_demarshallers.c', ['--generate-demarshallers', '--server', '--include', 'common/messages.h', '@INPUT@', '@OUTPUT@']],
-    ['server_marshallers', spice_proto,
+    ['server_demarshallers', [ spice_proto, client_demarshallers ],
+      ['generated_server_demarshallers.c'],
+      ['--generate-demarshallers', '--server', '--include', 'common/messages.h', '@INPUT0@', '@OUTPUT0@']
+    ],
+    ['server_marshallers', [ spice_proto, client_demarshallers ],
       ['generated_server_marshallers.c', 'generated_server_marshallers.h'],
       ['--generate-marshallers', '--generate-header',
-        '--server'] + structs_args + ['--include', 'common/messages.h', '@INPUT@', '@OUTPUT0@'
+        '--server'] + structs_args + ['--include', 'common/messages.h', '@INPUT0@', '@OUTPUT0@'
       ]
     ],
   ]
@@ -140,8 +151,12 @@ if spice_common_generate_server_code
   spice_common_server_sources = []
 
   foreach t : targets
-    cmd = [python, spice_codegen] + t[3]
-    target = custom_target(t[0], input : t[1], output : t[2], install : false, command : cmd, depend_files : spice_codegen_files)
+    target = custom_target(t[0],
+                           input : t[1],
+                           output : t[2],
+                           install : false,
+                           command : [codegen_cmd, t[3]],
+                           depend_files : [spice_codegen_files, 'messages.h'])
     spice_common_server_sources += target
   endforeach
 
