@@ -114,7 +114,7 @@ generated_client_demarshallers.c generated_messages.h: $(top_srcdir)/spice.proto
 	--generated-declaration-file generated_messages.h $< $@ >/dev/null
 
 generated_client_marshallers.c generated_client_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include client_marshallers.h --client \
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include common/client_marshallers.h --client \
 	--generate-header $< $@ >/dev/null
 
 generated_server_demarshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
