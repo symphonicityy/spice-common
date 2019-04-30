@@ -138,4 +138,8 @@ EXTRA_DIST =				\
 	quic_tmpl.c			\
 	$(NULL)
 
+GITIGNOREFILES = \
+	generated_messages.h \
+	$(NULL)
+
 -include $(top_srcdir)/git.mk
