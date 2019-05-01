@@ -10,8 +10,7 @@ if not meson.is_subproject()
 endif
 
 # some global vars
-spice_common_global_cflags = ['-DHAVE_CONFIG_H',
-                              '-DG_LOG_DOMAIN="Spice"',
+spice_common_global_cflags = ['-DG_LOG_DOMAIN="Spice"',
                               '-Wall',
                               '-Wextra',
                               '-Werror',

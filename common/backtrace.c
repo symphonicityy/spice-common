@@ -21,9 +21,7 @@
  * Copyright (C) 2008 Red Hat, Inc.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "backtrace.h"
 
