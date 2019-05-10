@@ -223,9 +223,9 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 {
     OUT_PIXEL    *op = out_buf;
     OUT_PIXEL    *const op_limit = out_buf + size;
-    uint32_t ctrl = decode(encoder);
 
     for (;;) {
+        uint32_t ctrl = decode(encoder);
 
         if (ctrl >= MAX_COPY) { // reference (dictionary/RLE)
             /* retrieving the reference and the match length */
@@ -305,7 +305,6 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
         if (LZ_UNEXPECT_CONDITIONAL(op >= op_limit)) {
             break;
         }
-        ctrl = decode(encoder);
     }
 
     return (op - out_buf);
