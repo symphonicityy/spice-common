@@ -294,14 +294,11 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
         } else { // copy
             ctrl++; // copy count is biased by 1
             spice_assert(op + CAST_PLT_DISTANCE(ctrl) <= op_limit);
-            COPY_COMP_PIXEL(encoder, op);
 
-            spice_assert(op <= op_limit);
-
-            for (--ctrl; ctrl; ctrl--) {
+            do {
                 COPY_COMP_PIXEL(encoder, op);
                 spice_extra_assert(op <= op_limit);
-            }
+            } while(--ctrl);
         }
 
         if (LZ_UNEXPECT_CONDITIONAL(op >= op_limit)) {
