@@ -222,7 +222,7 @@
 static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 {
     OUT_PIXEL    *op = out_buf;
-    OUT_PIXEL    *op_limit = out_buf + size;
+    OUT_PIXEL    *const op_limit = out_buf + size;
     uint32_t ctrl = decode(encoder);
 
     for (;;) {
@@ -280,7 +280,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
                                           //       because the number of pixel copied is larger
                                           //       then one...
                 /* optimize copy for a run */
-                OUT_PIXEL b = *ref;
+                const OUT_PIXEL b = *ref;
                 for (; len; --len) {
                     COPY_PIXEL(b, op);
                     spice_assert(op <= op_limit);
