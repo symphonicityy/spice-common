@@ -283,12 +283,12 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
                 const OUT_PIXEL b = *ref;
                 for (; len; --len) {
                     COPY_PIXEL(b, op);
-                    spice_assert(op <= op_limit);
+                    spice_extra_assert(op <= op_limit);
                 }
             } else {
                 for (; len; --len) {
                     COPY_REF_PIXEL(ref, op);
-                    spice_assert(op <= op_limit);
+                    spice_extra_assert(op <= op_limit);
                 }
             }
         } else { // copy
@@ -300,7 +300,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 
             for (--ctrl; ctrl; ctrl--) {
                 COPY_COMP_PIXEL(encoder, op);
-                spice_assert(op <= op_limit);
+                spice_extra_assert(op <= op_limit);
             }
         }
 
