@@ -226,12 +226,13 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
     uint32_t ctrl = decode(encoder);
 
     for (;;) {
-        const OUT_PIXEL *ref = op;
-        uint32_t len = ctrl >> 5;
-        uint32_t ofs = (ctrl & 31) << 8; // 5 MSb of distance
 
         if (ctrl >= MAX_COPY) { // reference (dictionary/RLE)
             /* retrieving the reference and the match length */
+
+            const OUT_PIXEL *ref = op;
+            uint32_t len = ctrl >> 5;
+            uint32_t ofs = (ctrl & 31) << 8; // 5 MSb of distance
 
             uint8_t code;
             len--;
