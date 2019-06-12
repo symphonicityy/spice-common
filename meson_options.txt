@@ -12,6 +12,7 @@ option('extra-checks',
 
 option('celt051',
     type : 'feature',
+    value : 'disabled',
     yield : true,
     description: 'Enable celt051 audio codec')
 
