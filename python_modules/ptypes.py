@@ -884,8 +884,6 @@ class ContainerType(Type):
                     member = m.lookup_case_member(name)
                     if member != None:
                         break
-                if member != None:
-                    break
 
         if member == None:
             raise Exception("No member called %s found" % name)
