@@ -315,6 +315,8 @@ def write_validate_pointer_item(writer, container, item, scope, parent_scope, st
 def write_validate_array_item(writer, container, item, scope, parent_scope, start,
                               want_nw_size, want_mem_size, want_extra_size):
     array = item.type
+    if item.member:
+        array.check_valid(item.member)
     is_byte_size = False
     element_type = array.element_type
     if array.is_bytes_length():
