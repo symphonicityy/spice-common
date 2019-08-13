@@ -805,6 +805,9 @@ def write_array_parser(writer, member, nelements, array, dest, scope):
     if member:
         array_start = dest.get_ref(member.name)
         at_end = member.has_end_attr()
+        # the field is supposed to be a [0] array, check it
+        if at_end:
+            writer.statement('verify(sizeof(%s) == 0)' % array_start)
     else:
         array_start = "end"
         at_end = True
