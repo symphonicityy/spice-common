@@ -283,6 +283,7 @@ current:
         print >> sys.stderr, 'type %s' % t
         print >> sys.stderr, writer.getvalue()
         traceback.print_exc(sys.stderr)
+        sys.exit(1)
 
 def generate_declarations():
     writer = codegen.CodeWriter()
