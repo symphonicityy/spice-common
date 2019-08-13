@@ -6,7 +6,7 @@ channel TestChannel {
    } ShortDataSubMarshall;
 
    message {
-      int8 name[];
+      int8 name[] @end;
    } ArrayMessage;
 
     message {

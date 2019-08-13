@@ -10,7 +10,7 @@ typedef struct {
 } SpiceMsgMainShortDataSubMarshall;
 
 typedef struct {
-    int8_t *name;
+    int8_t name[0];
 } SpiceMsgMainArrayMessage;
 
 typedef struct {
