@@ -804,7 +804,7 @@ def write_array_parser(writer, member, nelements, array, dest, scope):
     element_type = array.element_type
     if member:
         array_start = dest.get_ref(member.name)
-        at_end = member.has_attr("end")
+        at_end = member.has_end_attr()
     else:
         array_start = "end"
         at_end = True
