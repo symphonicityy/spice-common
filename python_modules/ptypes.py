@@ -98,7 +98,7 @@ def fix_attributes(attribute_list):
         attrs[name] = lst
 
     # these attributes specify output format, only one can be set
-    output_attrs = set(['end', 'to_ptr', 'as_ptr', 'ptr_array', 'zero'])
+    output_attrs = set(['end', 'to_ptr', 'as_ptr', 'ptr_array', 'zero', 'chunk'])
     if len(output_attrs.intersection(attrs.keys())) > 1:
         raise Exception("Multiple output type attributes specified %s" % output_attrs)
 
