@@ -327,6 +327,8 @@ channel MainChannel : BaseChannel {
     } @declare migrate_dst_do_seamless;
 
     Empty migrate_connected_seamless;
+
+    Data quality_indicator;
 };
 
 enum8 clip_type {
@@ -970,6 +972,7 @@ channel DisplayChannel : BaseChannel {
         uint32 h;
     } @declare gl_draw;
 
+    Data quality_indicator;
  client:
     message {
         uint8 pixmap_cache_id;
