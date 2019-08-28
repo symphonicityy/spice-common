@@ -170,5 +170,4 @@ subdir('docs')
 # write config.h
 #
 configure_file(output : 'config.h',
-               install : false,
                configuration : spice_common_config_data)
