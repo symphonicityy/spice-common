@@ -73,6 +73,7 @@ test_dummy_recorder_SOURCES =		\
 	$(NULL)
 test_dummy_recorder_CFLAGS =		\
 	-I$(top_srcdir)			\
+	$(PROTOCOL_CFLAGS)		\
 	$(NULL)
 test_dummy_recorder_LDADD =				\
 	$(top_builddir)/common/libspice-common.la	\

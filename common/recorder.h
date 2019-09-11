@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <spice/macros.h>
 
 /* Replacement declarations.
  * There declarations should generate no code (beside when no optimization are
@@ -45,7 +46,7 @@ typedef struct SpiceDummyTweak {
 #define RECORDER(rec, num_rings, comment) \
     RECORDER_DEFINE(rec, num_rings, comment)
 #define RECORDER_DEFINE(rec, num_rings, comment) \
-    const SpiceEmptyStruct spice_recorder_ ## rec = {}
+    const SpiceEmptyStruct SPICE_GNUC_UNUSED spice_recorder_ ## rec = {}
 #define RECORDER_TRACE(rec) \
     (sizeof(spice_recorder_ ## rec) != sizeof(SpiceEmptyStruct))
 #define RECORDER_TWEAK_DECLARE(rec) \
