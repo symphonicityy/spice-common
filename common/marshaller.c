@@ -116,16 +116,15 @@ struct SpiceMarshaller {
 struct SpiceMarshallerData {
     size_t total_size;
     size_t base;
-    SpiceMarshaller *marshallers;
     SpiceMarshaller *last_marshaller;
 
     size_t current_buffer_position;
     MarshallerBuffer *current_buffer;
     MarshallerItem *current_buffer_item;
-    MarshallerBuffer *buffers;
 
-    SpiceMarshaller static_marshaller;
-    MarshallerBuffer static_buffer;
+    // first marshaller and buffer are statically allocated here
+    SpiceMarshaller marshallers[1];
+    MarshallerBuffer buffers[1];
 };
 
 static void spice_marshaller_init(SpiceMarshaller *m,
@@ -149,16 +148,15 @@ SpiceMarshaller *spice_marshaller_new(void)
 
     d = spice_new(SpiceMarshallerData, 1);
 
-    d->last_marshaller = d->marshallers = &d->static_marshaller;
+    d->last_marshaller = d->marshallers;
     d->total_size = 0;
     d->base = 0;
-    d->buffers = &d->static_buffer;
     d->buffers->next = NULL;
     d->current_buffer = d->buffers;
     d->current_buffer_position = 0;
     d->current_buffer_item = NULL;
 
-    m = &d->static_marshaller;
+    m = d->marshallers;
     spice_marshaller_init(m, d);
 
     return m;
