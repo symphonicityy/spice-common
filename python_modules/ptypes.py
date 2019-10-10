@@ -60,6 +60,9 @@ valid_attributes=set([
     'outvar',
     # C structure has an anonymous member (used in switch)
     'anon',
+    # the C structure contains a pointer to a SpiceChunks structure.
+    # The SpiceChunks structure is allocated inside the demarshalled
+    # buffer and data will point to original message.
     'chunk',
     # this channel is contained in an #ifdef section
     # the argument specifies the preprocessor define to check
