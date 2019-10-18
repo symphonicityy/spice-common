@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #undef ENABLE_RECORDER
+#undef ENABLE_AGENT_INTERFACE
 
 #include <common/recorder.h>
 
