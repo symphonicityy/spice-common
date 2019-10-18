@@ -229,7 +229,7 @@ def write_validate_struct_function(writer, struct):
         writer.statement("return 0")
 
     writer.newline()
-    writer.error_check("start >= message_end")
+    writer.error_check("offset >= (uintptr_t) (message_end - message_start)")
 
     writer.newline()
     write_validate_container(writer, None, struct, "start", scope, True, True, False)
@@ -283,7 +283,7 @@ def write_validate_pointer_item(writer, container, item, scope, parent_scope, st
             else:
                 write_validate_array_item(writer, container, array_item, scope, parent_scope, start,
                                           True, want_mem_size=need_mem_size, want_extra_size=False)
-                writer.error_check("%s + %s > (uintptr_t) (message_end - message_start)" % (v, array_item.nw_size()))
+                writer.error_check("%s > (uintptr_t) (message_end - message_start - %s)" % (array_item.nw_size(), v))
 
             if want_extra_size:
                 if item.member and item.member.has_attr("chunk"):
