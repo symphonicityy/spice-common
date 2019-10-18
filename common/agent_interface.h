@@ -540,3 +540,25 @@ static inline uintptr_t _recorder_double(double d)
         return u.i;
     }
 }
+
+// ============================================================================
+//   Agent-Interface specific definitions
+// ============================================================================
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+// launch the Agent-Interface server socket
+extern void agent_interface_start(unsigned int port);
+
+//
+typedef void (*forward_quality_cb_t)(void *, const char *);
+extern void agent_interface_set_forward_quality_cb(forward_quality_cb_t cb, void *data);
+
+// set a callback function triggered when a new client connects to the socket
+typedef int (*on_connect_cb_t)(void *);
+extern void agent_interface_set_on_connect_cb(on_connect_cb_t cb, void *data);
+#ifdef __cplusplus
+}
+#endif // __cplusplus

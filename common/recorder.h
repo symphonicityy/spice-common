@@ -73,3 +73,30 @@ recorder_dump_on_common_signals(unsigned add, unsigned remove)
 #else
 #include <common/recorder/recorder.h>
 #endif
+
+#if !defined(ENABLE_AGENT_INTERFACE)
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+/* Stubs for Agent-Interface specific definitions */
+static inline void
+agent_interface_start(unsigned int port)
+{
+}
+
+typedef void (*forward_quality_cb_t)(void *, const char *);
+static inline void
+agent_interface_set_forward_quality_cb(forward_quality_cb_t cb, void *data)
+{
+}
+
+typedef int (*on_connect_cb_t)(void *);
+static inline void
+agent_interface_set_on_connect_cb(on_connect_cb_t cb, void *data)
+{
+}
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+#endif

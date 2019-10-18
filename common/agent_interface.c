@@ -43,6 +43,12 @@ static FILE *communication_f = NULL;
 static recorder_info *recorders[NB_MAX_RECORDERS];
 static uint32_t nb_recorders = 0;
 
+static forward_quality_cb_t forward_quality_cb;
+static void *forward_quality_cb_data;
+
+static on_connect_cb_t on_connect_cb;
+static void *on_connect_cb_data;
+
 static uintptr_t recorder_tick(void);
 
 #ifndef RECORDER_HZ
@@ -98,6 +104,10 @@ static int agent_initialize_communication(int socket)
         g_info("Enable recorder '%s'", recorders[i]->name);
     }
 
+    if (on_connect_cb && on_connect_cb(on_connect_cb_data)) {
+        goto unlock;
+    }
+
     communication_f = socket_f;
     ret = 0;
 
@@ -124,6 +134,18 @@ static void agent_finalize_communication(int socket)
     g_mutex_unlock(&mutex_socket);
 }
 
+static void forward_quality(const char *quality)
+{
+    if (!forward_quality_cb) {
+        g_warning("Quality: No callback set, dropping the message (%s).", quality);
+        return;
+    }
+
+    g_info("Quality: Forwarding '%s'", quality);
+
+    forward_quality_cb(forward_quality_cb_data, quality);
+}
+
 static int agent_process_communication(int socket)
 {
     static char msg_in[128];
@@ -144,7 +166,8 @@ static int agent_process_communication(int socket)
     }
 
     if (msg_in[len] == '\0') {
-        // TODO: process quality indicator
+        // process quality indicator
+        forward_quality(msg_in);
         len = 0;
         return 0;
     }
@@ -394,6 +417,26 @@ static void recorder_trace_entry(recorder_info *info, recorder_entry *entry, ...
     }
 
     g_mutex_unlock(&mutex_socket);
+}
+
+void agent_interface_start(unsigned int port)
+{
+    g_info("Launch on port %u", port);
+    recorder_initialization(port);
+}
+
+void agent_interface_set_forward_quality_cb(forward_quality_cb_t cb, void *data)
+{
+    g_debug("Received forward_quality callback");
+    forward_quality_cb = cb;
+    forward_quality_cb_data = data;
+}
+
+void agent_interface_set_on_connect_cb(on_connect_cb_t cb, void *data)
+{
+    g_debug("Received on_connect callback");
+    on_connect_cb = cb;
+    on_connect_cb_data = data;
 }
 
 void recorder_append(recorder_info *rec,
