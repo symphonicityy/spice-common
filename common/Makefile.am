@@ -65,6 +65,13 @@ libspice_common_la_SOURCES += \
 	$(NULL)
 endif
 
+if ENABLE_AGENT_INTERFACE
+libspice_common_la_SOURCES += \
+	agent_interface.c		\
+	agent_interface.h		\
+	$(NULL)
+endif
+
 # These 2 files are not build as part of spice-common
 # build system, but modules using spice-common will build
 # them with the appropriate options. We need to let automake

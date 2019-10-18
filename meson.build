@@ -36,8 +36,11 @@ if host_machine.endian() == 'big'
   spice_common_config_data.set('WORDS_BIGENDIAN', '1')
 endif
 
-if get_option('recorder')
+if get_option('instrumentation') == 'recorder'
   spice_common_config_data.set('ENABLE_RECORDER', '1')
+endif
+if get_option('instrumentation') == 'agent'
+  spice_common_config_data.set('ENABLE_AGENT_INTERFACE', '1')
 endif
 
 spice_common_generate_code = get_option('generate-code')

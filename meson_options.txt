@@ -21,11 +21,11 @@ option('opus',
     yield : true,
     description: 'Enable Opus audio codec')
 
-option('recorder',
-    type : 'boolean',
-    value : false,
-    yield : true,
-    description: 'Enable recorder instrumentation')
+option('instrumentation',
+    type : 'combo',
+    value : 'no',
+    choices : ['recorder', 'agent', 'no'],
+    description: 'Enable instrumentation')
 
 option('smartcard',
     type : 'feature',

@@ -41,12 +41,18 @@ spice_common_sources = [
   'recorder.h'
 ]
 
-if get_option('recorder')
+if get_option('instrumentation') == 'recorder'
   spice_common_sources += [
     'recorder/recorder.c',
     'recorder/recorder.h',
     'recorder/recorder_ring.c',
     'recorder/recorder_ring.h'
+  ]
+endif
+if get_option('instrumentation') == 'agent'
+  spice_common_sources += [
+    'agent_interface.c',
+    'agent_interface.h'
   ]
 endif
 

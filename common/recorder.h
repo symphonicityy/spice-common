@@ -16,7 +16,14 @@
 */
 /* This file include recorder library headers or if disabled provide
  * replacement declarations */
-#ifndef ENABLE_RECORDER
+
+#ifdef ENABLE_RECORDER
+#include <common/recorder/recorder.h>
+
+#elif defined(ENABLE_AGENT_INTERFACE)
+#include <common/agent_interface.h>
+
+#else
 
 #include <stdio.h>
 #include <stdint.h>
@@ -69,9 +76,6 @@ static inline void
 recorder_dump_on_common_signals(unsigned add, unsigned remove)
 {
 }
-
-#else
-#include <common/recorder/recorder.h>
 #endif
 
 #if !defined(ENABLE_AGENT_INTERFACE)

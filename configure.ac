@@ -41,7 +41,7 @@ AC_ARG_ENABLE([alignment-checks],
 AS_IF([test "x$enable_alignment_checks" = "xyes"],
       [AC_DEFINE([SPICE_DEBUG_ALIGNMENT], 1, [Enable runtime checks for cast alignment])])
 
-SPICE_CHECK_RECORDER
+SPICE_CHECK_INSTRUMENTATION
 
 # Checks for libraries
 PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.12])

@@ -341,17 +341,20 @@ AC_DEFUN([SPICE_CHECK_OPENSSL], [
     PKG_CHECK_MODULES(OPENSSL, openssl)
 ])
 
-# SPICE_CHECK_RECORDER
+# SPICE_CHECK_INSTRUMENTATION
 # -----------------
-# Check for the availability of recorder library.
+# Check for the availability of an instrumentation library.
 #------------------
-AC_DEFUN([SPICE_CHECK_RECORDER], [
-    AC_ARG_ENABLE([recorder],
-      AS_HELP_STRING([--enable-recorder],
-                     [Enable recorder instrumentation @<:@default=no@:>@]),
+AC_DEFUN([SPICE_CHECK_INSTRUMENTATION], [
+    AC_ARG_ENABLE([instrumentation],
+      AS_HELP_STRING([--enable-instrumentation=@<:@recorder/agent/no@:>@],
+                     [Enable instrumentation @<:@default=no@:>@]),
       [],
-      enable_recorder="no")
-    AS_IF([test "$enable_recorder" = "yes"],
-           AC_DEFINE([ENABLE_RECORDER], [1], [Define if recorder instrumentation is enabled]))
-    AM_CONDITIONAL([ENABLE_RECORDER],[test "$enable_recorder" = "yes"])
+      enable_instrumentation="no")
+    AS_IF([test "$enable_instrumentation" = "recorder"],
+           AC_DEFINE([ENABLE_RECORDER], [1], [Define if the recorder instrumentation is enabled]))
+    AS_IF([test "$enable_instrumentation" = "agent"],
+           AC_DEFINE([ENABLE_AGENT_INTERFACE], [1], [Define if the agent-interface instrumentation is enabled]))
+    AM_CONDITIONAL([ENABLE_RECORDER],[test "$enable_instrumentation" = "recorder"])
+    AM_CONDITIONAL([ENABLE_AGENT_INTERFACE],[test "$enable_instrumentation" = "agent"])
 ])
