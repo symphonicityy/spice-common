@@ -394,7 +394,7 @@ static void more_io_words(Encoder *encoder)
 
 static inline void write_io_word(Encoder *encoder)
 {
-    if (encoder->io_now == encoder->io_end) {
+    if (G_UNLIKELY(encoder->io_now == encoder->io_end)) {
         more_io_words(encoder);
     }
     *(encoder->io_now++) = GUINT32_TO_LE(encoder->io_word);
@@ -442,7 +442,7 @@ static inline void flush(Encoder *encoder)
 
 static inline void read_io_word(Encoder *encoder)
 {
-    if (encoder->io_now == encoder->io_end) {
+    if (G_UNLIKELY(encoder->io_now == encoder->io_end)) {
         more_io_words(encoder);
     }
     if (spice_extra_checks) {
