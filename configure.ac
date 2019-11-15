@@ -33,6 +33,13 @@ AC_SEARCH_LIBS(regcomp, [regex rx])
 SPICE_CHECK_SYSDEPS
 SPICE_EXTRA_CHECKS
 
+AC_ARG_ENABLE([tests],
+  AS_HELP_STRING([--enable-tests],
+                 [Enable tests @<:@default=yes@:>@]),
+  [],
+  enable_tests="yes")
+AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" = "xyes")
+
 AC_ARG_ENABLE([alignment-checks],
   AS_HELP_STRING([--enable-alignment-checks],
                  [Enable runtime checks for cast alignment @<:@default=no@:>@]),

@@ -1,7 +1,11 @@
 NULL =
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = python_modules common tests docs
+SUBDIRS = python_modules common docs
+
+if ENABLE_TESTS
+SUBDIRS += tests
+endif
 
 EXTRA_DIST =				\
 	meson.build			\
