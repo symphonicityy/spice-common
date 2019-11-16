@@ -166,7 +166,9 @@ add_project_arguments(compiler.get_supported_arguments(spice_common_global_cflag
 #
 subdir('python_modules')
 subdir('common')
-subdir('tests')
+if get_option('tests')
+  subdir('tests')
+endif
 subdir('docs')
 
 #

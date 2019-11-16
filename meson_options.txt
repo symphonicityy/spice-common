@@ -47,3 +47,9 @@ option('generate-code',
     type : 'combo',
     choices : ['all', 'server', 'client'],
     description : 'Which code should be built')
+
+option('tests',
+    type : 'boolean',
+    value : true,
+    yield : true,
+    description : 'Enable SPICE tests')
