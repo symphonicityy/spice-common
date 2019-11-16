@@ -507,16 +507,11 @@ static void FNAME(compress)(Encoder *encoder)
 #undef PIXEL
 #undef ENCODE_PIXEL
 #undef SAME_PIXEL
-#undef LZ_READU16
 #undef HASH_FUNC
-#undef BYTES_TO_16
-#undef HASH_FUNC_16
 #undef GET_rgb
-#undef GET_CODE
 #undef LZ_PLT
 #undef LZ_RGB_ALPHA
 #undef LZ_RGB16
 #undef LZ_RGB24
 #undef LZ_RGB32
 #undef LZ_A8
-#undef HASH_FUNC2
