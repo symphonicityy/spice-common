@@ -19,6 +19,9 @@
 #ifndef H_SPICE_COMMON_SND_CODEC
 #define H_SPICE_COMMON_SND_CODEC
 
+#include <stdbool.h>
+#include <spice/enums.h>
+
 #define SND_CODEC_OPUS_FRAME_SIZE       480
 #define SND_CODEC_OPUS_PLAYBACK_FREQ    48000
 #define SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES 480
@@ -46,7 +49,7 @@ SPICE_BEGIN_DECLS
 
 typedef struct SndCodecInternal * SndCodec;
 
-int  snd_codec_is_capable(int mode, int frequency);
+bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency);
 
 int  snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose);
 void snd_codec_destroy(SndCodec *codec);

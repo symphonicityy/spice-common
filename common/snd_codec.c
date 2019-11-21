@@ -134,11 +134,11 @@ static int snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int i
 
 /*
   snd_codec_is_capable
-    Returns TRUE if the current spice implementation can
-      use the given codec, FALSE otherwise.
+    Returns true if the current spice implementation can
+      use the given codec, false otherwise.
    mode must be a SPICE_AUDIO_DATA_MODE_XXX enum from spice/enum.h
  */
-int snd_codec_is_capable(int mode, int frequency)
+bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency)
 {
 #if HAVE_OPUS
     if (mode == SPICE_AUDIO_DATA_MODE_OPUS &&
@@ -146,10 +146,10 @@ int snd_codec_is_capable(int mode, int frequency)
           frequency == 48000 || frequency == 24000 ||
           frequency == 16000 || frequency == 12000 ||
           frequency == 8000) )
-        return TRUE;
+        return true;
 #endif
 
-    return FALSE;
+    return false;
 }
 
 /*
