@@ -34,30 +34,34 @@
 
 #define SND_CODEC_ANY_FREQUENCY        -1
 
-#define SND_CODEC_OK                    0
-#define SND_CODEC_UNAVAILABLE           1
-#define SND_CODEC_ENCODER_UNAVAILABLE   2
-#define SND_CODEC_DECODER_UNAVAILABLE   3
-#define SND_CODEC_ENCODE_FAILED         4
-#define SND_CODEC_DECODE_FAILED         5
-#define SND_CODEC_INVALID_ENCODE_SIZE   6
-
 #define SND_CODEC_ENCODE                0x0001
 #define SND_CODEC_DECODE                0x0002
 
 SPICE_BEGIN_DECLS
 
+typedef enum {
+    SND_CODEC_OK,
+    SND_CODEC_UNAVAILABLE,
+    SND_CODEC_ENCODER_UNAVAILABLE,
+    SND_CODEC_DECODER_UNAVAILABLE,
+    SND_CODEC_ENCODE_FAILED,
+    SND_CODEC_DECODE_FAILED,
+    SND_CODEC_INVALID_ENCODE_SIZE,
+} SndCodecResult;
+
 typedef struct SndCodecInternal * SndCodec;
 
 bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency);
 
-int  snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose);
+SndCodecResult snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose);
 void snd_codec_destroy(SndCodec *codec);
 
 int  snd_codec_frame_size(SndCodec codec);
 
-int  snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size);
-int  snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size);
+SndCodecResult snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size,
+                                uint8_t *out_ptr, int *out_size);
+SndCodecResult snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size,
+                                uint8_t *out_ptr, int *out_size);
 
 SPICE_END_DECLS
 

@@ -51,7 +51,6 @@ typedef struct SndCodecInternal
 } SndCodecInternal;
 
 
-
 /* Opus support routines */
 #if HAVE_OPUS
 static void snd_codec_destroy_opus(SndCodecInternal *codec)
@@ -68,7 +67,7 @@ static void snd_codec_destroy_opus(SndCodecInternal *codec)
 
 }
 
-static int snd_codec_create_opus(SndCodecInternal *codec, int purpose)
+static SndCodecResult snd_codec_create_opus(SndCodecInternal *codec, int purpose)
 {
     int opus_error;
 
@@ -99,7 +98,9 @@ error:
     return SND_CODEC_UNAVAILABLE;
 }
 
-static int snd_codec_encode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+static SndCodecResult
+snd_codec_encode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size,
+                      uint8_t *out_ptr, int *out_size)
 {
     int n;
     if (in_size != SND_CODEC_OPUS_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2)
@@ -113,7 +114,9 @@ static int snd_codec_encode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int i
     return SND_CODEC_OK;
 }
 
-static int snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+static SndCodecResult
+snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size,
+                      uint8_t *out_ptr, int *out_size)
 {
     int n;
     n = opus_decode(codec->opus_decoder, in_ptr, in_size, (opus_int16 *) out_ptr,
@@ -165,9 +168,9 @@ bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency)
 
   snd_codec_destroy is the obvious partner of snd_codec_create.
  */
-int snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
+SndCodecResult snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
 {
-    int rc = SND_CODEC_UNAVAILABLE;
+    SndCodecResult rc = SND_CODEC_UNAVAILABLE;
     SndCodecInternal **c = codec;
 
     *c = spice_new0(SndCodecInternal, 1);
@@ -231,7 +234,8 @@ int snd_codec_frame_size(SndCodec codec)
      Returns:
        SND_CODEC_OK  if all went well
 */
-int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+SndCodecResult
+snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
 #if HAVE_OPUS
     SndCodecInternal *c = codec;
@@ -258,7 +262,7 @@ int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
      Returns:
        SND_CODEC_OK  if all went well
 */
-int snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+SndCodecResult snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
 #if HAVE_OPUS
     SndCodecInternal *c = codec;
