@@ -39,7 +39,7 @@
 #include "mem.h"
 #include "log.h"
 
-typedef struct
+typedef struct SndCodecInternal
 {
     int mode;
     int frequency;
@@ -262,7 +262,7 @@ int snd_codec_is_capable(int mode, int frequency)
 int snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
 {
     int rc = SND_CODEC_UNAVAILABLE;
-    SndCodecInternal **c = (SndCodecInternal **) codec;
+    SndCodecInternal **c = codec;
 
     *c = spice_new0(SndCodecInternal, 1);
     (*c)->frequency = frequency;
@@ -286,7 +286,7 @@ int snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
 */
 void snd_codec_destroy(SndCodec *codec)
 {
-    SndCodecInternal **c = (SndCodecInternal **) codec;
+    SndCodecInternal **c = codec;
     if (! c || ! *c)
         return;
 
@@ -311,7 +311,7 @@ void snd_codec_destroy(SndCodec *codec)
 int snd_codec_frame_size(SndCodec codec)
 {
 #if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = (SndCodecInternal *) codec;
+    SndCodecInternal *c = codec;
 #endif
 #if HAVE_CELT051
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
@@ -345,7 +345,7 @@ int snd_codec_frame_size(SndCodec codec)
 int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
 #if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = (SndCodecInternal *) codec;
+    SndCodecInternal *c = codec;
 #endif
 #if HAVE_CELT051
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1) {
@@ -384,7 +384,7 @@ int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
 int snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
 #if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = (SndCodecInternal *) codec;
+    SndCodecInternal *c = codec;
 #endif
 #if HAVE_CELT051
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
