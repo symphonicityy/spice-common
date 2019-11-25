@@ -21,12 +21,36 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <stdint.h>
 
 G_BEGIN_DECLS
 
 const char *spice_genum_get_nick(GType enum_type, gint value);
 int spice_genum_get_value(GType enum_type, const char *nick,
                           gint default_value);
+
+#define BIT_BYTE(nr)            ((nr) / 8)
+#define BIT_MASK(nr)            (1 << ((nr) % 8))
+
+/**
+ * set_bitmap - Set a bit in memory
+ * @nr: the bit to set
+ * @addr: the address to start counting from
+ */
+static inline void set_bitmap(uint32_t nr, uint8_t *addr)
+{
+    addr[BIT_BYTE(nr)] |= BIT_MASK(nr);
+}
+
+/**
+ * test_bitmap - Determine whether a bit is set
+ * @nr: bit number to test
+ * @addr: Address to start counting from
+ */
+static inline int test_bitmap(uint32_t nr, const uint8_t *addr)
+{
+    return 1 & (addr[BIT_BYTE(nr)] >> (nr % 8));
+}
 
 G_END_DECLS
 
