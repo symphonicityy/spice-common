@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <glib.h>
-
 #include "quic.h"
 #include "log.h"
 
