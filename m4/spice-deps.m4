@@ -346,3 +346,34 @@ AC_DEFUN([SPICE_CHECK_INSTRUMENTATION], [
     AM_CONDITIONAL([ENABLE_RECORDER],[test "$enable_instrumentation" = "recorder"])
     AM_CONDITIONAL([ENABLE_AGENT_INTERFACE],[test "$enable_instrumentation" = "agent"])
 ])
+
+# SPICE_COMMON
+# -----------------
+# Define variables in order to use spice-common
+# SPICE_COMMON_DIR        directory for output libraries
+# SPICE_COMMON_CFLAGS     CFLAGS to add to use the library
+#
+# SPICE_PROTOCOL_MIN_VER  input (m4) and output (autoconf) SPICE protocol version
+# SPICE_PROTOCOL_CFLAGS   CFLAGS for SPICE protocol, already automatically included
+#------------------
+AC_DEFUN([SPICE_COMMON], [dnl
+dnl These add some flags and checks to component using spice-common
+dnl The flags are necessary in order to make included header working
+    AC_REQUIRE([SPICE_CHECK_CELT051])dnl
+    AC_REQUIRE([SPICE_EXTRA_CHECKS])dnl
+    AC_REQUIRE([SPICE_CHECK_INSTRUMENTATION])dnl
+dnl Get the required spice protocol version
+    m4_define([SPICE_PROTOCOL_MIN_VER],m4_ifdef([SPICE_PROTOCOL_MIN_VER],SPICE_PROTOCOL_MIN_VER,[0.12.12]))dnl
+    m4_define([SPICE_PROTOCOL_MIN_VER],m4_if(m4_version_compare(SPICE_PROTOCOL_MIN_VER,[0.12.12]),[1],SPICE_PROTOCOL_MIN_VER,[0.12.12]))dnl
+    [SPICE_PROTOCOL_MIN_VER]=SPICE_PROTOCOL_MIN_VER
+    m4_undefine([SPICE_PROTOCOL_MIN_VER])dnl
+    PKG_CHECK_MODULES([SPICE_PROTOCOL], [spice-protocol >= $SPICE_PROTOCOL_MIN_VER])
+    AC_SUBST([SPICE_PROTOCOL_MIN_VER])dnl
+dnl Configuration variables
+    AC_CONFIG_SUBDIRS([$1])dnl
+    SPICE_COMMON_CFLAGS='-I${top_srcdir}/$1 -I${top_builddir}/$1 -DG_LOG_DOMAIN=\"Spice\" $(SPICE_PROTOCOL_CFLAGS)'
+    AC_SUBST([SPICE_COMMON_CFLAGS])dnl
+
+    SPICE_COMMON_DIR='${top_builddir}/$1'
+    AC_SUBST([SPICE_COMMON_DIR])dnl
+])
