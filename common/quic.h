@@ -20,7 +20,6 @@
 #define H_SPICE_COMMON_QUIC
 
 #include <spice/macros.h>
-#include "quic_config.h"
 #include "macros.h"
 
 SPICE_BEGIN_DECLS

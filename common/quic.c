@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "quic_config.h"
 #include "quic.h"
 #include "log.h"
 
