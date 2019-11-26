@@ -31,9 +31,17 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+
+#if HAVE_CELT051
+#include <celt051/celt.h>
+#endif
+
+#if HAVE_OPUS
+#include  <opus.h>
+#endif
+
 #include <spice/macros.h>
 #include <spice/enums.h>
-
 
 #include "snd_codec.h"
 #include "mem.h"

@@ -19,15 +19,6 @@
 #ifndef H_SPICE_COMMON_SND_CODEC
 #define H_SPICE_COMMON_SND_CODEC
 
-
-#if HAVE_CELT051
-#include <celt051/celt.h>
-#endif
-
-#if HAVE_OPUS
-#include  <opus.h>
-#endif
-
 /* Spice uses a very fixed protocol when transmitting CELT audio;
    audio must be transmitted in frames of 256, and we must compress
    data down to a fairly specific size (47, computation below).
