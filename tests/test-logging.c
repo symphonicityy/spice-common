@@ -267,6 +267,30 @@ static void test_spice_g_messages_debug_all(void)
     g_test_trap_assert_stderr("*g_message\n*other_message\n");
 }
 
+/* Checks that spice_assert() aborts if condition fails */
+static void test_spice_assert(void)
+{
+    if (g_test_subprocess()) {
+        spice_assert(1 == 2);
+        return;
+    }
+    g_test_trap_subprocess(NULL, 0, 0);
+    g_test_trap_assert_failed();
+    g_test_trap_assert_stderr("*assertion `1 == 2' failed*");
+}
+
+/* Checks that spice_extra_assert() aborts if condition fails */
+static void test_spice_extra_assert(void)
+{
+    if (g_test_subprocess()) {
+        spice_extra_assert(1 == 2);
+        return;
+    }
+    g_test_trap_subprocess(NULL, 0, 0);
+    g_test_trap_assert_failed();
+    g_test_trap_assert_stderr("*assertion `1 == 2' failed*");
+}
+
 static void handle_sigabrt(int sig G_GNUC_UNUSED)
 {
     _Exit(1);
@@ -298,6 +322,10 @@ int main(int argc, char **argv)
     g_test_add_func("/spice-common/spice-fatal-return-if-fail", test_spice_fatal_return_if_fail);
     g_test_add_func("/spice-common/spice-non-fatal-greturn-if-fail", test_spice_non_fatal_g_return_if_fail);
     g_test_add_func("/spice-common/spice-fatal-warning", test_spice_fatal_warning);
+    g_test_add_func("/spice-common/spice-assert", test_spice_assert);
+    if (spice_extra_checks) {
+        g_test_add_func("/spice-common/spice-extra-assert", test_spice_extra_assert);
+    }
 
     return g_test_run();
 }

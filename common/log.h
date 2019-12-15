@@ -99,6 +99,12 @@ enum { spice_extra_checks = 1 };
 enum { spice_extra_checks = 0 };
 #endif
 
+#define spice_extra_assert(x) G_STMT_START {            \
+    if (!spice_extra_checks || G_LIKELY(x)) { } else {  \
+        spice_error("assertion `%s' failed", #x);       \
+    }                                                   \
+} G_STMT_END
+
 SPICE_END_DECLS
 
 #endif // H_SPICE_COMMON_LOG
