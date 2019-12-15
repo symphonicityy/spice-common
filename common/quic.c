@@ -279,9 +279,7 @@ static const BYTE lzeroes[256] = {
 /* count leading zeroes */
 static unsigned int cnt_l_zeroes(const unsigned int bits)
 {
-    if (spice_extra_checks) {
-        spice_assert(bits != 0);
-    }
+    spice_extra_assert(bits != 0);
 #if defined(__GNUC__) && __GNUC__ >= 4
     return __builtin_clz(bits);
 #else
@@ -405,10 +403,9 @@ static inline void encode(Encoder *encoder, unsigned int word, unsigned int len)
 {
     int delta;
 
-    if (spice_extra_checks) {
-        spice_assert(len > 0 && len < 32);
-        spice_assert(!(word & ~bppmask[len]));
-    }
+    spice_extra_assert(len > 0 && len < 32);
+    spice_extra_assert(!(word & ~bppmask[len]));
+
     if ((delta = ((int)encoder->io_available_bits - len)) >= 0) {
         encoder->io_available_bits = delta;
         encoder->io_word |= word << encoder->io_available_bits;
@@ -420,10 +417,8 @@ static inline void encode(Encoder *encoder, unsigned int word, unsigned int len)
     encoder->io_available_bits = 32 - delta;
     encoder->io_word = word << encoder->io_available_bits;
 
-    if (spice_extra_checks) {
-        spice_assert(encoder->io_available_bits < 32);
-        spice_assert((encoder->io_word & bppmask[encoder->io_available_bits]) == 0);
-    }
+    spice_extra_assert(encoder->io_available_bits < 32);
+    spice_extra_assert((encoder->io_word & bppmask[encoder->io_available_bits]) == 0);
 }
 
 static inline void encode_32(Encoder *encoder, unsigned int word)
@@ -446,9 +441,8 @@ static inline void read_io_word(Encoder *encoder)
     if (G_UNLIKELY(encoder->io_now == encoder->io_end)) {
         more_io_words(encoder);
     }
-    if (spice_extra_checks) {
-        spice_assert(encoder->io_now < encoder->io_end);
-    }
+    spice_extra_assert(encoder->io_now < encoder->io_end);
+
     encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now));
     encoder->io_now++;
 }
@@ -457,9 +451,7 @@ static inline void decode_eatbits(Encoder *encoder, int len)
 {
     int delta;
 
-    if (spice_extra_checks) {
-        spice_assert(len > 0 && len < 32);
-    }
+    spice_extra_assert(len > 0 && len < 32);
     encoder->io_word <<= len;
 
     if ((delta = ((int)encoder->io_available_bits - len)) >= 0) {
