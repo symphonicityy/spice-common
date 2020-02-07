@@ -41,7 +41,7 @@
 
 typedef struct SndCodecInternal
 {
-    int mode;
+    SpiceAudioDataMode mode;
     int frequency;
 
 #if HAVE_OPUS
@@ -168,7 +168,8 @@ bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency)
 
   snd_codec_destroy is the obvious partner of snd_codec_create.
  */
-SndCodecResult snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
+SndCodecResult
+snd_codec_create(SndCodec *codec, SpiceAudioDataMode mode, int frequency, int purpose)
 {
     SndCodecResult rc = SND_CODEC_UNAVAILABLE;
     SndCodecInternal **c = codec;
@@ -262,7 +263,8 @@ snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr,
      Returns:
        SND_CODEC_OK  if all went well
 */
-SndCodecResult snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+SndCodecResult
+snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
 #if HAVE_OPUS
     SndCodecInternal *c = codec;

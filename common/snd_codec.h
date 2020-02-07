@@ -53,7 +53,8 @@ typedef struct SndCodecInternal * SndCodec;
 
 bool snd_codec_is_capable(SpiceAudioDataMode mode, int frequency);
 
-SndCodecResult snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose);
+SndCodecResult snd_codec_create(SndCodec *codec,
+                                SpiceAudioDataMode mode, int frequency, int purpose);
 void snd_codec_destroy(SndCodec *codec);
 
 int  snd_codec_frame_size(SndCodec codec);
