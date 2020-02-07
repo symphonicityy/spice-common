@@ -338,7 +338,7 @@ int snd_codec_frame_size(SndCodec codec)
 
   Parameters:
     1.  codec       Pointer to codec control previously allocated + created
-    2.  in_data     Pointer to uncompressed PCM data
+    2.  in_ptr      Pointer to uncompressed PCM data
     3.  in_size     Input size  (for celt, this must be a
                     particular size, governed by the frame size)
     4.  out_ptr     Pointer to area to write encoded data
@@ -379,7 +379,7 @@ int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
 
   Parameters:
     1.  codec       Pointer to codec control previously allocated + created
-    2.  in_data     Pointer to compressed data
+    2.  in_ptr      Pointer to compressed data
     3.  in_size     Input size
     4.  out_ptr     Pointer to area to write decoded data
     5.  out_size    On input, the maximum size of the output buffer; on
