@@ -27,6 +27,8 @@ typedef enum {
     COLOR_MODE_RGB,
     COLOR_MODE_RGB16,
     COLOR_MODE_GRAY,
+
+    COLOR_MODE_END
 } color_mode_t;
 
 static color_mode_t color_mode = COLOR_MODE_RGB;
@@ -339,9 +341,9 @@ static void pixbuf_compare(GdkPixbuf *pixbuf_a, GdkPixbuf *pixbuf_b)
     }
 }
 
-static GdkPixbuf *pixbuf_new_random(void)
+static GdkPixbuf *pixbuf_new_random(int alpha)
 {
-    gboolean has_alpha = g_random_boolean();
+    gboolean has_alpha = alpha >= 0 ? alpha : g_random_boolean();
     gint width = g_random_int_range(100, 2000);
     gint height = g_random_int_range(100, 500);
     GdkPixbuf *random_pixbuf;
@@ -392,13 +394,17 @@ int main(int argc, char **argv)
             g_object_unref(source_pixbuf);
         }
     } else if (argc == 1) {
-        unsigned int count;
-
-        for (count = 0; count < 50; count++) {
-            color_mode = (color_mode_t) (count % 3);
-            GdkPixbuf *pixbuf = pixbuf_new_random();
-            test_pixbuf(pixbuf);
-            g_object_unref(pixbuf);
+        int alpha;
+        for (alpha = 0; alpha < 2; alpha++) {
+            for (color_mode = COLOR_MODE_RGB; color_mode < COLOR_MODE_END; color_mode++) {
+                /* alpha affects only COLOR_MODE_RGB more, reduce number of tests */
+                if (color_mode != COLOR_MODE_RGB && alpha) {
+                    continue;
+                }
+                GdkPixbuf *pixbuf = pixbuf_new_random(alpha);
+                test_pixbuf(pixbuf);
+                g_object_unref(pixbuf);
+            }
         }
     } else {
         g_assert_not_reached();
