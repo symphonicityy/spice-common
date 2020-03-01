@@ -345,12 +345,13 @@ static GdkPixbuf *pixbuf_new_random(void)
     gint width = g_random_int_range(100, 2000);
     gint height = g_random_int_range(100, 2000);
     GdkPixbuf *random_pixbuf;
-    guint i;
+    guint i, size;
     guint8 *pixels;
 
     random_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, has_alpha, 8, width, height);
     pixels = gdk_pixbuf_get_pixels(random_pixbuf);
-    for (i = 0; i < gdk_pixbuf_get_byte_length(random_pixbuf); i++) {
+    size = gdk_pixbuf_get_byte_length(random_pixbuf);
+    for (i = 0; i < size; i++) {
         pixels[i] = g_random_int_range(0, 256);
     }
 
