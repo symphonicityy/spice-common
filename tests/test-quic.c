@@ -341,7 +341,7 @@ static void pixbuf_compare(GdkPixbuf *pixbuf_a, GdkPixbuf *pixbuf_b)
     }
 }
 
-static GdkPixbuf *pixbuf_new_random(int alpha)
+static GdkPixbuf *pixbuf_new_random(int alpha, bool fixed)
 {
     gboolean has_alpha = alpha >= 0 ? alpha : g_random_boolean();
     gint width = g_random_int_range(100, 2000);
@@ -354,7 +354,7 @@ static GdkPixbuf *pixbuf_new_random(int alpha)
     pixels = gdk_pixbuf_get_pixels(random_pixbuf);
     size = gdk_pixbuf_get_byte_length(random_pixbuf);
     for (i = 0; i < size; i++) {
-        pixels[i] = g_random_int_range(0, 256);
+        pixels[i] = fixed ? (gint)((i%(has_alpha?4:3))) << 5 : g_random_int_range(0, 256);
     }
 
     return random_pixbuf;
@@ -394,14 +394,17 @@ int main(int argc, char **argv)
             g_object_unref(source_pixbuf);
         }
     } else if (argc == 1) {
-        int alpha;
-        for (alpha = 0; alpha < 2; alpha++) {
+        int test;
+        for (test = 0; test < 4; test++) {
+            int alpha = test % 2;
+            bool fixed = (test / 2) % 2;
+
             for (color_mode = COLOR_MODE_RGB; color_mode < COLOR_MODE_END; color_mode++) {
                 /* alpha affects only COLOR_MODE_RGB more, reduce number of tests */
                 if (color_mode != COLOR_MODE_RGB && alpha) {
                     continue;
                 }
-                GdkPixbuf *pixbuf = pixbuf_new_random(alpha);
+                GdkPixbuf *pixbuf = pixbuf_new_random(alpha, fixed);
                 test_pixbuf(pixbuf);
                 g_object_unref(pixbuf);
             }
