@@ -343,7 +343,7 @@ static GdkPixbuf *pixbuf_new_random(void)
 {
     gboolean has_alpha = g_random_boolean();
     gint width = g_random_int_range(100, 2000);
-    gint height = g_random_int_range(100, 2000);
+    gint height = g_random_int_range(100, 500);
     GdkPixbuf *random_pixbuf;
     guint i, size;
     guint8 *pixels;
