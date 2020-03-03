@@ -355,6 +355,9 @@ AC_DEFUN([SPICE_CHECK_INSTRUMENTATION], [
 #
 # SPICE_PROTOCOL_MIN_VER  input (m4) and output (autoconf) SPICE protocol version
 # SPICE_PROTOCOL_CFLAGS   CFLAGS for SPICE protocol, already automatically included
+#
+# GLIB2_MIN_VER           input (m4) and output (shell) GLib2 minimum version
+# GLIB2_MIN_VERSION       output (shell) variable like "GLIB_VERSION_1_2" from GLIB2_MIN_VER
 #------------------
 AC_DEFUN([SPICE_COMMON], [dnl
 dnl These add some flags and checks to component using spice-common
@@ -369,9 +372,18 @@ dnl Get the required spice protocol version
     m4_undefine([SPICE_PROTOCOL_MIN_VER])dnl
     PKG_CHECK_MODULES([SPICE_PROTOCOL], [spice-protocol >= $SPICE_PROTOCOL_MIN_VER])
     AC_SUBST([SPICE_PROTOCOL_MIN_VER])dnl
+dnl Get the required GLib2 version
+    m4_define([GLIB2_MIN_VER],m4_ifdef([GLIB2_MIN_VER],GLIB2_MIN_VER,[2.38]))dnl
+    m4_define([GLIB2_MIN_VER],m4_if(m4_version_compare(GLIB2_MIN_VER,[2.38]),[1],GLIB2_MIN_VER,[2.38]))dnl
+    m4_define([GLIB2_MIN_VERSION],[GLIB_VERSION_]m4_translit(GLIB2_MIN_VER,[.],[_]))dnl
+    [GLIB2_MIN_VER]=GLIB2_MIN_VER
+    [GLIB2_MIN_VERSION]=GLIB2_MIN_VERSION
+    m4_undefine([GLIB2_MIN_VER])dnl
+    m4_undefine([GLIB2_MIN_VERSION])dnl
+    PKG_CHECK_MODULES([GLIB2], [glib-2.0 >= $GLIB2_MIN_VER gio-2.0 >= $GLIB2_MIN_VER gthread-2.0 >= $GLIB2_MIN_VER])
 dnl Configuration variables
     AC_CONFIG_SUBDIRS([$1])dnl
-    SPICE_COMMON_CFLAGS='-I${top_srcdir}/$1 -I${top_builddir}/$1 -DG_LOG_DOMAIN=\"Spice\" $(SPICE_PROTOCOL_CFLAGS)'
+    SPICE_COMMON_CFLAGS='-I${top_srcdir}/$1 -I${top_builddir}/$1 -DG_LOG_DOMAIN=\"Spice\" $(SPICE_PROTOCOL_CFLAGS) $(GLIB2_CFLAGS)'
     AC_SUBST([SPICE_COMMON_CFLAGS])dnl
 
     SPICE_COMMON_DIR='${top_builddir}/$1'
