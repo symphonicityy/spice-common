@@ -1,7 +1,12 @@
 #
 # Build tests
 #
-tests = ['test-logging', 'test-region', 'test-ssl-verify']
+tests = [
+  'test-logging',
+  'test-region',
+  'test-ssl-verify',
+  'test-utils',
+]
 tests_deps = [spice_common_dep]
 
 foreach t : tests

@@ -79,6 +79,20 @@ test_dummy_recorder_LDADD =				\
 	$(top_builddir)/common/libspice-common.la	\
 	$(NULL)
 
+
+TESTS += test_utils
+test_utils_SOURCES =			\
+	test-utils.c			\
+	$(NULL)
+test_utils_CFLAGS =			\
+	-I$(top_srcdir)			\
+	$(GLIB2_CFLAGS)			\
+	$(NULL)
+test_utils_LDADD =					\
+	$(top_builddir)/common/libspice-common.la	\
+	$(NULL)
+
+
 # Avoid need for python(pyparsing) by end users
 TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\
