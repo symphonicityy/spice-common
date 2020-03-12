@@ -2,8 +2,9 @@
 # project definition
 #
 project('spice-common', 'c',
-         meson_version : '>= 0.48.0',
-         license : 'LGPLv2.1')
+        meson_version : '>= 0.48.0',
+        license : 'LGPLv2.1',
+        default_options : ['warning_level=2'])
 
 if not meson.is_subproject()
   warning('This project is only intended to be used as a subproject!')
@@ -11,8 +12,6 @@ endif
 
 # some global vars
 spice_common_global_cflags = ['-DG_LOG_DOMAIN="Spice"',
-                              '-Wall',
-                              '-Wextra',
                               '-Werror',
                               '-Wno-unused-parameter']
 
