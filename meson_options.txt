@@ -39,7 +39,7 @@ option('manual',
 
 option('generate-code',
     type : 'combo',
-    choices : ['all', 'server', 'client'],
+    choices : ['all', 'server', 'client', 'none'],
     description : 'Which code should be built')
 
 option('tests',

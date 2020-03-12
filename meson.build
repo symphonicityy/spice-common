@@ -119,17 +119,19 @@ foreach dep, version : optional_deps
 endforeach
 
 # Python
-py_module = import('python')
-python = py_module.find_installation()
+if spice_common_generate_client_code or spice_common_generate_server_code
+  py_module = import('python')
+  python = py_module.find_installation()
 
-if get_option('python-checks')
-  foreach module : ['six', 'pyparsing']
-    message('Checking for python module @0@'.format(module))
-    cmd = run_command(python, '-m', module)
-    if cmd.returncode() != 0
-      error('Python module @0@ not found'.format(module))
-    endif
-  endforeach
+  if get_option('python-checks')
+    foreach module : ['six', 'pyparsing']
+      message('Checking for python module @0@'.format(module))
+      cmd = run_command(python, '-m', module)
+      if cmd.returncode() != 0
+        error('Python module @0@ not found'.format(module))
+      endif
+    endforeach
+  endif
 endif
 
 # smartcard check

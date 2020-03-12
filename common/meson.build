@@ -67,19 +67,21 @@ spice_common_dep = declare_dependency(link_with : spice_common_lib,
 
 
 # client_demarshallers
-codegen_cmd = [python, spice_codegen]
-codegen_args = ['--generate-demarshallers',
-                '--client',
-                '--include', 'common/messages.h',
-                '--generated-declaration-file', '@OUTPUT1@',
-                '@INPUT@', '@OUTPUT0@']
+if spice_common_generate_client_code or spice_common_generate_server_code
+  codegen_cmd = [python, spice_codegen]
+  codegen_args = ['--generate-demarshallers',
+                  '--client',
+                  '--include', 'common/messages.h',
+                  '--generated-declaration-file', '@OUTPUT1@',
+                  '@INPUT@', '@OUTPUT0@']
 
-client_demarshallers = custom_target('client_demarshallers',
-                                     input : [spice_proto],
-                                     output : ['generated_client_demarshallers.c', 'generated_messages.h'],
-                                     install : false,
-                                     command : [codegen_cmd, codegen_args],
-                                     depend_files : [spice_codegen_files, 'messages.h'])
+  client_demarshallers = custom_target('client_demarshallers',
+                                       input : [spice_proto],
+                                       output : ['generated_client_demarshallers.c', 'generated_messages.h'],
+                                       install : false,
+                                       command : [codegen_cmd, codegen_args],
+                                       depend_files : [spice_codegen_files, 'messages.h'])
+endif
 
 #
 # libspice-common-client
