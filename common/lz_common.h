@@ -28,8 +28,6 @@
 
 SPICE_BEGIN_DECLS
 
-//#define DEBUG
-
 /* change the max window size will require change in the encoding format*/
 #define LZ_MAX_WINDOW_SIZE (1 << 25)
 #define MAX_COPY 32
