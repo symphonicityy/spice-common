@@ -31,7 +31,7 @@
         va_list args;                                                            \
                                                                                  \
         va_start (args, format);                                                 \
-        g_logv(OTHER_LOG_DOMAIN, G_PASTE(G_LOG_LEVEL_, level), format, args);    \
+        g_logv(OTHER_LOG_DOMAIN, G_LOG_LEVEL_ ## level, format, args);           \
         va_end (args);                                                           \
     }
 
