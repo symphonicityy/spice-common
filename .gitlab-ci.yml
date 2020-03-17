@@ -5,7 +5,7 @@ before_script:
     dnf install git libtool make libasan
     python3 python3-six python3-pyparsing glib-networking
     meson ninja-build gdk-pixbuf2-devel
-    glib2-devel celt051-devel pixman-devel openssl-devel libjpeg-devel
+    glib2-devel pixman-devel openssl-devel libjpeg-devel
     libcacard-devel cyrus-sasl-devel lz4-devel opus-devel
     gstreamer1-devel gstreamer1-plugins-base-devel
     -y
@@ -17,7 +17,7 @@ makecheck:
   - >
     CFLAGS='-O2 -pipe -g -fsanitize=address -fno-omit-frame-pointer -Wframe-larger-than=40920'
     LDFLAGS='-fsanitize=address -lasan'
-    ./autogen.sh --enable-extra-checks --enable-celt051
+    ./autogen.sh --enable-extra-checks
   - make
   - make check || (cat tests/test-suite.log && exit 1)
 
@@ -26,7 +26,7 @@ meson-makecheck:
   - >
     CFLAGS='-O2 -pipe -g -fsanitize=address -fno-omit-frame-pointer -Wframe-larger-than=40920'
     LDFLAGS='-fsanitize=address -lasan'
-    meson build -Dextra-checks=true -Dcelt051=enabled || (cat build/meson-logs/meson-log.txt && exit 1)
+    meson build -Dextra-checks=true || (cat build/meson-logs/meson-log.txt && exit 1)
   - ninja -C build
   - (cd build && meson test) || (cat build/meson-logs/testlog.txt && exit 1)
 
@@ -42,6 +42,6 @@ make-win:
     PYTHON=python3
     CFLAGS='-O2 -pipe -g -fsanitize=address -fno-omit-frame-pointer -Wframe-larger-than=40920'
     LDFLAGS='-fsanitize=address -lasan'
-    mingw64-configure --enable-extra-checks --disable-celt051
+    mingw64-configure --enable-extra-checks
   - make
   - make LOG_COMPILER=wine check || (cat tests/test-suite.log && exit 1)

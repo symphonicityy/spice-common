@@ -19,27 +19,15 @@
 #ifndef H_SPICE_COMMON_SND_CODEC
 #define H_SPICE_COMMON_SND_CODEC
 
-/* Spice uses a very fixed protocol when transmitting CELT audio;
-   audio must be transmitted in frames of 256, and we must compress
-   data down to a fairly specific size (47, computation below).
-   While the protocol doesn't inherently specify this, the expectation
-   of older clients and server mandates it.
-*/
-#define SND_CODEC_CELT_FRAME_SIZE       256
-#define SND_CODEC_CELT_BIT_RATE         (64 * 1024)
-#define SND_CODEC_CELT_PLAYBACK_FREQ    44100
-#define SND_CODEC_CELT_COMPRESSED_FRAME_BYTES (SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_CELT_BIT_RATE / \
-                                        SND_CODEC_CELT_PLAYBACK_FREQ / 8)
-
 #define SND_CODEC_OPUS_FRAME_SIZE       480
 #define SND_CODEC_OPUS_PLAYBACK_FREQ    48000
 #define SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES 480
 
 #define SND_CODEC_PLAYBACK_CHAN         2
 
-#define SND_CODEC_MAX_FRAME_SIZE        (MAX(SND_CODEC_CELT_FRAME_SIZE, SND_CODEC_OPUS_FRAME_SIZE))
+#define SND_CODEC_MAX_FRAME_SIZE        SND_CODEC_OPUS_FRAME_SIZE
 #define SND_CODEC_MAX_FRAME_BYTES       (SND_CODEC_MAX_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2 /* FMT_S16 */)
-#define SND_CODEC_MAX_COMPRESSED_BYTES  MAX(SND_CODEC_CELT_COMPRESSED_FRAME_BYTES, SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES)
+#define SND_CODEC_MAX_COMPRESSED_BYTES  SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES
 
 #define SND_CODEC_ANY_FREQUENCY        -1
 

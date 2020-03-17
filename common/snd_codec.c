@@ -20,10 +20,6 @@
      General purpose sound codec routines for use by Spice.
    These routines abstract the work of picking a codec and
    encoding and decoding the buffers.
-     Note:  these routines have some peculiarities that come from
-   wanting to provide full backwards compatibility with the original
-   Spice celt 0.51 implementation.  It has some hard requirements
-   (fixed sample size, fixed compressed buffer size).
 
    See below for documentation of the public routines.
 */
@@ -31,10 +27,6 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
-
-#if HAVE_CELT051
-#include <celt051/celt.h>
-#endif
 
 #if HAVE_OPUS
 #include  <opus.h>
@@ -51,11 +43,6 @@ typedef struct SndCodecInternal
 {
     int mode;
     int frequency;
-#if HAVE_CELT051
-    CELTMode *celt_mode;
-    CELTEncoder *celt_encoder;
-    CELTDecoder *celt_decoder;
-#endif
 
 #if HAVE_OPUS
     OpusEncoder *opus_encoder;
@@ -63,90 +50,6 @@ typedef struct SndCodecInternal
 #endif
 } SndCodecInternal;
 
-
-
-/* celt 0.51 specific support routines */
-#if HAVE_CELT051
-static void snd_codec_destroy_celt051(SndCodecInternal *codec)
-{
-    if (codec->celt_decoder) {
-        celt051_decoder_destroy(codec->celt_decoder);
-        codec->celt_decoder = NULL;
-    }
-
-    if (codec->celt_encoder) {
-        celt051_encoder_destroy(codec->celt_encoder);
-        codec->celt_encoder = NULL;
-    }
-
-    if (codec->celt_mode) {
-        celt051_mode_destroy(codec->celt_mode);
-        codec->celt_mode = NULL;
-    }
-}
-
-static int snd_codec_create_celt051(SndCodecInternal *codec, int purpose)
-{
-    int celt_error;
-
-    codec->celt_mode = celt051_mode_create(codec->frequency,
-                                           SND_CODEC_PLAYBACK_CHAN,
-                                           SND_CODEC_CELT_FRAME_SIZE, &celt_error);
-    if (! codec->celt_mode) {
-        g_warning("create celt mode failed %d", celt_error);
-        return SND_CODEC_UNAVAILABLE;
-    }
-
-    if (purpose & SND_CODEC_ENCODE) {
-        codec->celt_encoder = celt051_encoder_create(codec->celt_mode);
-        if (! codec->celt_encoder) {
-            g_warning("create celt encoder failed");
-            goto error;
-        }
-    }
-
-    if (purpose & SND_CODEC_DECODE) {
-        codec->celt_decoder = celt051_decoder_create(codec->celt_mode);
-        if (! codec->celt_decoder) {
-            g_warning("create celt decoder failed");
-            goto error;
-        }
-    }
-
-    codec->mode = SPICE_AUDIO_DATA_MODE_CELT_0_5_1;
-    return SND_CODEC_OK;
-
-error:
-    snd_codec_destroy_celt051(codec);
-    return SND_CODEC_UNAVAILABLE;
-}
-
-static int snd_codec_encode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
-{
-    int n;
-    if (in_size != SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2)
-        return SND_CODEC_INVALID_ENCODE_SIZE;
-    n = celt051_encode(codec->celt_encoder, (celt_int16_t *) in_ptr, NULL, out_ptr, *out_size);
-    if (n < 0) {
-        g_warning("celt051_encode failed %d", n);
-        return SND_CODEC_ENCODE_FAILED;
-    }
-    *out_size = n;
-    return SND_CODEC_OK;
-}
-
-static int snd_codec_decode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
-{
-    int n;
-    n = celt051_decode(codec->celt_decoder, in_ptr, in_size, (celt_int16_t *) out_ptr);
-    if (n < 0) {
-        g_warning("celt051_decode failed %d", n);
-        return SND_CODEC_DECODE_FAILED;
-    }
-    *out_size = SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2 /* 16 fmt */;
-    return SND_CODEC_OK;
-}
-#endif
 
 
 /* Opus support routines */
@@ -237,11 +140,6 @@ static int snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int i
  */
 int snd_codec_is_capable(int mode, int frequency)
 {
-#if HAVE_CELT051
-    if (mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
-        return TRUE;
-#endif
-
 #if HAVE_OPUS
     if (mode == SPICE_AUDIO_DATA_MODE_OPUS &&
          (frequency == SND_CODEC_ANY_FREQUENCY ||
@@ -275,11 +173,6 @@ int snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
     *c = spice_new0(SndCodecInternal, 1);
     (*c)->frequency = frequency;
 
-#if HAVE_CELT051
-    if (mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
-        rc = snd_codec_create_celt051(*c, purpose);
-#endif
-
 #if HAVE_OPUS
     if (mode == SPICE_AUDIO_DATA_MODE_OPUS)
         rc = snd_codec_create_opus(*c, purpose);
@@ -298,10 +191,6 @@ void snd_codec_destroy(SndCodec *codec)
     if (! c || ! *c)
         return;
 
-#if HAVE_CELT051
-    snd_codec_destroy_celt051(*c);
-#endif
-
 #if HAVE_OPUS
     snd_codec_destroy_opus(*c);
 #endif
@@ -318,14 +207,8 @@ void snd_codec_destroy(SndCodec *codec)
  */
 int snd_codec_frame_size(SndCodec codec)
 {
-#if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = codec;
-#endif
-#if HAVE_CELT051
-    if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
-        return SND_CODEC_CELT_FRAME_SIZE;
-#endif
 #if HAVE_OPUS
+    SndCodecInternal *c = codec;
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
         return SND_CODEC_OPUS_FRAME_SIZE;
 #endif
@@ -339,33 +222,19 @@ int snd_codec_frame_size(SndCodec codec)
   Parameters:
     1.  codec       Pointer to codec control previously allocated + created
     2.  in_ptr      Pointer to uncompressed PCM data
-    3.  in_size     Input size  (for celt, this must be a
-                    particular size, governed by the frame size)
+    3.  in_size     Input size
     4.  out_ptr     Pointer to area to write encoded data
     5.  out_size    On input, the maximum size of the output buffer; on
                     successful return, it will hold the number of bytes
-                    returned.  For celt, this must be set to a particular
-                    size to ensure compatibility.
+                    returned.
 
      Returns:
        SND_CODEC_OK  if all went well
 */
 int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
-#if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = codec;
-#endif
-#if HAVE_CELT051
-    if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1) {
-        /* The output buffer size in celt determines the compression,
-            and so is essentially mandatory to use a certain value (47) */
-        if (*out_size > SND_CODEC_CELT_COMPRESSED_FRAME_BYTES)
-            *out_size = SND_CODEC_CELT_COMPRESSED_FRAME_BYTES;
-        return snd_codec_encode_celt051(c, in_ptr, in_size, out_ptr, out_size);
-    }
-#endif
-
 #if HAVE_OPUS
+    SndCodecInternal *c = codec;
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
         return snd_codec_encode_opus(c, in_ptr, in_size, out_ptr, out_size);
 #endif
@@ -391,15 +260,8 @@ int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
 */
 int snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
-#if defined(HAVE_CELT051) || defined(HAVE_OPUS)
-    SndCodecInternal *c = codec;
-#endif
-#if HAVE_CELT051
-    if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
-        return snd_codec_decode_celt051(c, in_ptr, in_size, out_ptr, out_size);
-#endif
-
 #if HAVE_OPUS
+    SndCodecInternal *c = codec;
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
         return snd_codec_decode_opus(c, in_ptr, in_size, out_ptr, out_size);
 #endif
