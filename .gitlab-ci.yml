@@ -10,7 +10,8 @@ before_script:
     gstreamer1-devel gstreamer1-plugins-base-devel
     -y
   - git clone ${CI_REPOSITORY_URL/spice-common.git/spice-protocol.git}
-  - (cd spice-protocol && ./autogen.sh --prefix=/usr && make install)
+  - meson --buildtype=release spice-protocol build-spice-protocol --prefix=/usr --werror
+  - ninja -C build-spice-protocol install
 
 makecheck:
   script:
