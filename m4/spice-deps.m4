@@ -337,8 +337,8 @@ dnl The flags are necessary in order to make included header working
     AC_REQUIRE([SPICE_EXTRA_CHECKS])dnl
     AC_REQUIRE([SPICE_CHECK_INSTRUMENTATION])dnl
 dnl Get the required spice protocol version
-    m4_define([SPICE_PROTOCOL_MIN_VER],m4_ifdef([SPICE_PROTOCOL_MIN_VER],SPICE_PROTOCOL_MIN_VER,[0.12.12]))dnl
-    m4_define([SPICE_PROTOCOL_MIN_VER],m4_if(m4_version_compare(SPICE_PROTOCOL_MIN_VER,[0.12.12]),[1],SPICE_PROTOCOL_MIN_VER,[0.12.12]))dnl
+    m4_define([SPICE_PROTOCOL_MIN_VER],m4_ifdef([SPICE_PROTOCOL_MIN_VER],SPICE_PROTOCOL_MIN_VER,[0.14.2]))dnl
+    m4_define([SPICE_PROTOCOL_MIN_VER],m4_if(m4_version_compare(SPICE_PROTOCOL_MIN_VER,[0.14.2]),[1],SPICE_PROTOCOL_MIN_VER,[0.14.2]))dnl
     [SPICE_PROTOCOL_MIN_VER]=SPICE_PROTOCOL_MIN_VER
     m4_undefine([SPICE_PROTOCOL_MIN_VER])dnl
     PKG_CHECK_MODULES([SPICE_PROTOCOL], [spice-protocol >= $SPICE_PROTOCOL_MIN_VER])

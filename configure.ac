@@ -51,7 +51,7 @@ AS_IF([test "x$enable_alignment_checks" = "xyes"],
 SPICE_CHECK_INSTRUMENTATION
 
 # Checks for libraries
-PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.12])
+PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.14.2])
 
 SPICE_CHECK_PYTHON_MODULES()
 

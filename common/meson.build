@@ -2,6 +2,8 @@
 # libspice-common
 #
 spice_common_sources = [
+  'agent.c',
+  'agent.h',
   'backtrace.c',
   'backtrace.h',
   'canvas_utils.c',

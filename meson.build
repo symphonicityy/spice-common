@@ -95,7 +95,7 @@ endif
 glib_version = '2.38'
 glib_version_info = '>= @0@'.format(glib_version)
 
-spice_protocol_version = '0.12.12'
+spice_protocol_version = '0.14.2'
 
 spice_protocol_version_req = get_option('spice-protocol-version')
 if spice_protocol_version_req.version_compare('> @0@'.format(spice_protocol_version))
