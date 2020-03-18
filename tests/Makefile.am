@@ -93,6 +93,22 @@ test_utils_LDADD =					\
 	$(NULL)
 
 
+noinst_PROGRAMS += helper_fuzzer_demarshallers
+helper_fuzzer_demarshallers_SOURCES =	\
+	helper-fuzzer-demarshallers.c	\
+	$(NULL)
+helper_fuzzer_demarshallers_CFLAGS =	\
+	-I$(top_srcdir)			\
+	$(GLIB2_CFLAGS)			\
+	$(PROTOCOL_CFLAGS)		\
+	$(NULL)
+helper_fuzzer_demarshallers_LDADD =				\
+	$(top_builddir)/common/libspice-common.la	        \
+	$(top_builddir)/common/libspice-common-server.la	\
+	$(top_builddir)/common/libspice-common-client.la	\
+	$(NULL)
+
+
 # Avoid need for python(pyparsing) by end users
 TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\

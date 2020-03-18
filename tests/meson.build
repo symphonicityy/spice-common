@@ -53,3 +53,12 @@ if gdk_pixbuf_dep.found()
                   dependencies : [spice_common_dep, gdk_pixbuf_dep],
                   install : false), timeout : 120)
 endif
+
+#
+# helper_fuzzer_demarshallers
+#
+if spice_common_generate_client_code and spice_common_generate_server_code
+  executable('helper_fuzzer_demarshallers', 'helper-fuzzer-demarshallers.c',
+             dependencies : [tests_deps, spice_common_server_dep, spice_common_client_dep],
+             install : false)
+endif
