@@ -35,9 +35,11 @@ make-win:
   script:
   - >
     dnf install mingw64-gcc mingw64-pkg-config mingw64-pixman mingw64-openssl
-    mingw64-opus mingw64-spice-protocol mingw64-glib2 mingw64-glib-networking mingw64-gdk-pixbuf
+    mingw64-opus mingw64-glib2 mingw64-glib-networking mingw64-gdk-pixbuf
     'wine-core(x86-64)'
     -y
+  - mkdir spice-protocol/build
+  - (cd spice-protocol/build && mingw64-meson --werror && ninja install)
   - NOCONFIGURE=yes ./autogen.sh
   - >
     PYTHON=python3
