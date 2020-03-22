@@ -24,6 +24,14 @@ SPICE_BEGIN_DECLS
 
 #include <spice/start-packed.h>
 
+/* This helper macro is to define a structure in a way compatible with
+ * Microsoft compiler */
+#define SPICE_INNER_FIELD_STATUS_ERROR(type, name) \
+    struct SPICE_ATTR_PACKED { \
+        char common_ ## name[sizeof(VDAgentFileXferStatusMessage)]; \
+        type name; \
+    }
+
 /**
  * Structure to fill with transfer status.
  * Fill as much details as you can and call agent_prepare_filexfer_status
@@ -31,13 +39,13 @@ SPICE_BEGIN_DECLS
  * If any detail are filled the status_size passed to agent_prepare_filexfer_status
  * should be updated.
  */
-typedef struct SPICE_ATTR_PACKED AgentFileXferStatusMessageFull {
+typedef union SPICE_ATTR_PACKED AgentFileXferStatusMessageFull {
     VDAgentFileXferStatusMessage common;
-    union SPICE_ATTR_PACKED {
-        VDAgentFileXferStatusNotEnoughSpace not_enough_space;
-        VDAgentFileXferStatusError error;
-    };
+    SPICE_INNER_FIELD_STATUS_ERROR(VDAgentFileXferStatusNotEnoughSpace, not_enough_space);
+    SPICE_INNER_FIELD_STATUS_ERROR(VDAgentFileXferStatusError, error);
 } AgentFileXferStatusMessageFull;
+
+#undef SPICE_INNER_FIELD_STATUS_ERROR
 
 #include <spice/end-packed.h>
 
