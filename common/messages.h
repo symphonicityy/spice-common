@@ -58,15 +58,6 @@ typedef struct SpiceMsgSmartcard {
     uint32_t reader_id;
     uint8_t data[0];
 } SpiceMsgSmartcard;
-
-typedef struct SpiceMsgcSmartcard {
-    VSCMsgHeader header;
-    union {
-        VSCMsgError error;
-        VSCMsgATR atr_data;
-        VSCMsgReaderAdd add;
-    };
-} SpiceMsgcSmartcard;
 #endif
 
 #include <common/generated_messages.h>
