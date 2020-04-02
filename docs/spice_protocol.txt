@@ -438,6 +438,12 @@ This flag field should contain just a single flag.
 Actually it's not used by python code so it's not enforced and no
 code is generated.
 
+deprecated
+~~~~~~~~~~
+
+This flag currently apply only to enumerations and flags types and will set
+generated C enumeration constant to deprecated
+
 ptr_array
 ~~~~~~~~~
 

@@ -20,7 +20,7 @@ def get_named_types():
 # other members
 propagated_attributes=["ptr_array", "nonnull", "chunk"]
 
-valid_attributes=set([
+valid_attributes_generic=set([
     # embedded/appended at the end of the resulting C structure
     'end',
     # the C structure contains a pointer to data
@@ -86,7 +86,7 @@ attributes_with_arguments=set([
     'virtual',
 ])
 
-def fix_attributes(attribute_list):
+def fix_attributes(attribute_list, valid_attributes=valid_attributes_generic):
     attrs = {}
     for attr in attribute_list:
         name = attr[0][1:] # [1:] strips the leading '@' from the name
@@ -173,8 +173,6 @@ class Type:
         _types_by_name[self.name] = self
 
     def has_attr(self, name):
-        if not name in valid_attributes:
-            raise Exception('attribute %s not expected' % name)
         return name in self.attributes
 
 class TypeRef(Type):
@@ -310,9 +308,10 @@ class EnumType(EnumBaseType):
         last = -1
         names = {}
         values = {}
+        attributes = {}
         for v in enums:
             name = v[0]
-            if len(v) > 1:
+            if v[1] is not None:
                 value = v[1]
             else:
                 value = last + 1
@@ -321,9 +320,11 @@ class EnumType(EnumBaseType):
             assert value not in names
             names[value] = name
             values[name] = value
+            attributes[value] = fix_attributes(v[2], set(['deprecated']))
 
         self.names = names
         self.values = values
+        self.val_attributes = attributes
 
         self.attributes = fix_attributes(attribute_list)
 
@@ -341,6 +342,8 @@ class EnumType(EnumBaseType):
             writer.write(self.c_enumname(i))
             if i != current_default:
                 writer.write(" = %d" % (i))
+            if 'deprecated' in self.val_attributes[i]:
+                writer.write(' SPICE_GNUC_DEPRECATED')
             writer.write(",")
             writer.newline()
             current_default = i + 1
@@ -363,9 +366,10 @@ class FlagsType(EnumBaseType):
         last = -1
         names = {}
         values = {}
+        attributes = {}
         for v in flags:
             name = v[0]
-            if len(v) > 1:
+            if v[1] is not None:
                 value = v[1]
             else:
                 value = last + 1
@@ -374,9 +378,11 @@ class FlagsType(EnumBaseType):
             assert value not in names
             names[value] = name
             values[name] = value
+            attributes[value] = fix_attributes(v[2], set(['deprecated']))
 
         self.names = names
         self.values = values
+        self.val_attributes = attributes
 
         self.attributes = fix_attributes(attribute_list)
 
@@ -394,6 +400,8 @@ class FlagsType(EnumBaseType):
             writer.write(self.c_enumname(i))
             mask = mask |  (1<<i)
             writer.write(" = (1 << %d)" % (i))
+            if 'deprecated' in self.val_attributes[i]:
+                writer.write(' SPICE_GNUC_DEPRECATED')
             writer.write(",")
             writer.newline()
             current_default = i + 1
@@ -600,8 +608,6 @@ class Containee:
         return not self.is_switch() and self.member_type.is_primitive()
 
     def has_attr(self, name):
-        if not name in valid_attributes:
-            raise Exception('attribute %s not expected' % name)
         return name in self.attributes
 
     def has_end_attr(self):

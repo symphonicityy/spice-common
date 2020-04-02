@@ -112,7 +112,7 @@ def SPICE_BNF():
                      int32_ ^ uint32_ ^ int64_ ^ uint64_ ^ unix_fd_ ^
                      typename).setName("type")
 
-        flagsBody = enumBody = Group(lbrace + delimitedList(Group (enumname + Optional(equals + integer))) + Optional(comma) + rbrace)
+        flagsBody = enumBody = Group(lbrace + delimitedList(Group (enumname + Optional(equals + integer, default=None) + attributes)) + Optional(comma) + rbrace)
 
         messageSpec = Group(message_ + messageBody + attributes).setParseAction(lambda toks: ptypes.MessageType(None, toks[0][1], toks[0][2])) | typename
 
