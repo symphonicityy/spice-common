@@ -1302,14 +1302,14 @@ channel SmartcardChannel : BaseChannel {
         case Error:
             VscMessageError error;
         } u @anon;
-    } @ctype(SpiceMsgcSmartcard) data = 101;
+    } @ctype(SpiceMsgcSmartcard) old_data = 101;
 */
     message {
         vsc_message_type type;
         uint32 reader_id;
         uint32 length;
         uint8 data[length] @end @nomarshal;
-    } @ctype(VSCMsgHeader) header = 101;
+    } @ctype(VSCMsgHeader) data = 101;
 /* See comment on client data message above */
 /*
     message {
