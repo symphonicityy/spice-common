@@ -47,3 +47,8 @@ option('tests',
     value : true,
     yield : true,
     description : 'Enable SPICE tests')
+
+option('spice-protocol-version',
+    type : 'string',
+    value : '0.1', # not existing low number version
+    description : 'Minimal requested SPICE protocol version')
