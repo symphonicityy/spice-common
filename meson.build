@@ -104,7 +104,6 @@ endif
 
 deps = {'spice-protocol' : '>= @0@'.format(spice_protocol_version),
         'glib-2.0'       : glib_version_info,
-        'gio-2.0'        : glib_version_info,
         'gthread-2.0'    : glib_version_info,
         'pixman-1'       : '>= 0.17.7',
         'openssl'        : '>= 1.0.0'}
@@ -112,6 +111,8 @@ deps = {'spice-protocol' : '>= @0@'.format(spice_protocol_version),
 foreach dep, version : deps
   spice_common_deps += dependency(dep, version : version)
 endforeach
+
+gio2_deps = dependency('gio-2.0', version : glib_version_info)
 
 #
 # Non-mandatory/optional dependencies

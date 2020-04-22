@@ -7,7 +7,7 @@ tests = [
   'test-ssl-verify',
   'test-utils',
 ]
-tests_deps = [spice_common_dep]
+tests_deps = [spice_common_dep, gio2_deps]
 
 foreach t : tests
   name = t.underscorify()

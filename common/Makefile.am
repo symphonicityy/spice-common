@@ -91,6 +91,10 @@ libspice_common_client_la_SOURCES =		\
 	$(CLIENT_MARSHALLERS)			\
 	$(NULL)
 
+libspice_common_client_la_LIBADD =		\
+	$(GIO2_LIBS)				\
+	$(NULL)
+
 libspice_common_server_la_SOURCES =		\
 	$(SERVER_MARSHALLERS)			\
 	$(NULL)

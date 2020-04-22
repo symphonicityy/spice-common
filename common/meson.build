@@ -114,11 +114,11 @@ if spice_common_generate_client_code
 
   spice_common_client_lib = static_library('spice-common-client', spice_common_client_sources,
                                            install : false,
-                                           dependencies : spice_common_dep)
+                                           dependencies : [spice_common_dep, gio2_deps])
 
   spice_common_client_dep = declare_dependency(sources : client_marshallers[1],
                                                link_with : spice_common_client_lib,
-                                               dependencies : spice_common_dep)
+                                               dependencies : [spice_common_dep, gio2_deps])
 endif
 
 #
