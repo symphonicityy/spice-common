@@ -2487,9 +2487,9 @@ static void canvas_draw_opaque(SpiceCanvas *spice_canvas, SpiceRect *bbox, Spice
 static void canvas_draw_blend(SpiceCanvas *spice_canvas, SpiceRect *bbox, SpiceClip *clip, SpiceBlend *blend)
 {
     CanvasBase *canvas = (CanvasBase *)spice_canvas;
+    pixman_region32_t dest_region;
     SpiceCanvas *surface_canvas;
     pixman_image_t *src_image;
-    pixman_region32_t dest_region;
     SpiceROP rop;
 
     pixman_region32_init_rect(&dest_region,
@@ -2514,17 +2514,18 @@ static void canvas_draw_blend(SpiceCanvas *spice_canvas, SpiceRect *bbox, SpiceC
     surface_canvas = canvas_get_surface(canvas, blend->src_bitmap);
     if (surface_canvas) {
         if (rect_is_same_size(bbox, &blend->src_area)) {
-            if (rop == SPICE_ROP_COPY)
+            if (rop == SPICE_ROP_COPY) {
                 spice_canvas->ops->blit_image_from_surface(spice_canvas, &dest_region,
                                                            surface_canvas,
                                                            bbox->left - blend->src_area.left,
                                                            bbox->top - blend->src_area.top);
-            else
+            } else {
                 spice_canvas->ops->blit_image_rop_from_surface(spice_canvas, &dest_region,
                                                                surface_canvas,
                                                                bbox->left - blend->src_area.left,
                                                                bbox->top - blend->src_area.top,
                                                                rop);
+            }
         } else {
             if (rop == SPICE_ROP_COPY) {
                 spice_canvas->ops->scale_image_from_surface(spice_canvas, &dest_region,
@@ -2549,7 +2550,8 @@ static void canvas_draw_blend(SpiceCanvas *spice_canvas, SpiceRect *bbox, SpiceC
                                                                 bbox->top,
                                                                 bbox->right - bbox->left,
                                                                 bbox->bottom - bbox->top,
-                                                                blend->scale_mode, rop);
+                                                                blend->scale_mode,
+                                                                rop);
             }
         }
     } else {
@@ -2557,17 +2559,18 @@ static void canvas_draw_blend(SpiceCanvas *spice_canvas, SpiceRect *bbox, SpiceC
         spice_return_if_fail(src_image != NULL);
 
         if (rect_is_same_size(bbox, &blend->src_area)) {
-            if (rop == SPICE_ROP_COPY)
+            if (rop == SPICE_ROP_COPY) {
                 spice_canvas->ops->blit_image(spice_canvas, &dest_region,
                                               src_image,
                                               bbox->left - blend->src_area.left,
                                               bbox->top - blend->src_area.top);
-            else
+            } else {
                 spice_canvas->ops->blit_image_rop(spice_canvas, &dest_region,
                                                   src_image,
                                                   bbox->left - blend->src_area.left,
                                                   bbox->top - blend->src_area.top,
                                                   rop);
+            }
         } else {
             if (rop == SPICE_ROP_COPY) {
                 spice_canvas->ops->scale_image(spice_canvas, &dest_region,
@@ -2592,7 +2595,8 @@ static void canvas_draw_blend(SpiceCanvas *spice_canvas, SpiceRect *bbox, SpiceC
                                                    bbox->top,
                                                    bbox->right - bbox->left,
                                                    bbox->bottom - bbox->top,
-                                                   blend->scale_mode, rop);
+                                                   blend->scale_mode,
+                                                   rop);
             }
         }
         pixman_image_unref(src_image);
