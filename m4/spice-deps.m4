@@ -119,7 +119,7 @@ AC_DEFUN([SPICE_CHECK_PIXMAN], [
 # use in the GLIB2_CFLAGS and GLIB2_LIBS variables.
 #------------------
 AC_DEFUN([SPICE_CHECK_GLIB2], [
-    PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.38 gthread-2.0 >= 2.38)
+    PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.38)
     PKG_CHECK_MODULES(GIO2, gio-2.0 >= 2.38)
     GLIB2_CFLAGS="$GLIB2_CFLAGS -DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_38 -DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_38"
 ])
@@ -352,7 +352,7 @@ dnl Get the required GLib2 version
     [GLIB2_MIN_VERSION]=GLIB2_MIN_VERSION
     m4_undefine([GLIB2_MIN_VER])dnl
     m4_undefine([GLIB2_MIN_VERSION])dnl
-    PKG_CHECK_MODULES([GLIB2], [glib-2.0 >= $GLIB2_MIN_VER gio-2.0 >= $GLIB2_MIN_VER gthread-2.0 >= $GLIB2_MIN_VER])
+    PKG_CHECK_MODULES([GLIB2], [glib-2.0 >= $GLIB2_MIN_VER gio-2.0 >= $GLIB2_MIN_VER])
 dnl Configuration variables
     AC_CONFIG_SUBDIRS([$1])dnl
     SPICE_COMMON_CFLAGS='-I${top_srcdir}/$1 -I${top_builddir}/$1 -DG_LOG_DOMAIN=\"Spice\" $(SPICE_PROTOCOL_CFLAGS) $(GLIB2_CFLAGS)'

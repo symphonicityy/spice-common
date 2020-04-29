@@ -104,7 +104,6 @@ endif
 
 deps = {'spice-protocol' : '>= @0@'.format(spice_protocol_version),
         'glib-2.0'       : glib_version_info,
-        'gthread-2.0'    : glib_version_info,
         'pixman-1'       : '>= 0.17.7',
         'openssl'        : '>= 1.0.0'}
 
