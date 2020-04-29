@@ -14,6 +14,20 @@
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
+
+/* Test QUIC encoding and decoding. This test can also be used to fuzz the decoding.
+ *
+ * To use for the fuzzer you should:
+ * 1- build enabling AFL.
+ * $ make clean
+ * $ make CC=afl-gcc CFLAGS='-O2 -fno-omit-frame-pointer'
+ * 2- run AFL, the export is to use ElectricFence to detect some additional
+ *    possible buffer overflow, AFL required the program to crash in case of errors
+ * $ cd tests
+ * $ mkdir afl_findings
+ * $ export AFL_PRELOAD=/usr/lib64/libefence.so.0.0
+ * $ afl-fuzz -i fuzzer-quic-testcases -o afl_findings -m 100 -- ./test_quic --fuzzer-decode @@
+ */
 #include <config.h>
 
 #include <stdlib.h>
@@ -32,6 +46,7 @@ typedef enum {
 } color_mode_t;
 
 static color_mode_t color_mode = COLOR_MODE_RGB;
+static bool fuzzying = false;
 
 typedef struct {
     QuicUsrContext usr;
@@ -41,6 +56,10 @@ typedef struct {
 static SPICE_GNUC_NORETURN SPICE_GNUC_PRINTF(2, 3) void
 quic_usr_error(QuicUsrContext *usr, const char *fmt, ...)
 {
+    if (fuzzying) {
+        exit(1);
+    }
+
     va_list ap;
 
     va_start(ap, fmt);
@@ -300,10 +319,14 @@ static GdkPixbuf *quic_decode_to_pixbuf(GByteArray *compressed_data)
     status = quic_decode_begin(quic,
                                (uint32_t *)compressed_data->data, compressed_data->len/4,
                                &type, &width, &height);
+    /* limit size for fuzzer, he restrict virtual memory */
+    if (fuzzying && (status != QUIC_OK || (width * height) > 16 * 1024 * 1024 / 4)) {
+        exit(1);
+    }
     g_assert(status == QUIC_OK);
 
     pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
-                            (type == QUIC_IMAGE_TYPE_RGBA), 8,
+                            (type == QUIC_IMAGE_TYPE_RGBA || type == QUIC_IMAGE_TYPE_RGB32), 8,
                             width, height);
     status = quic_decode(quic, type,
                          gdk_pixbuf_get_pixels(pixbuf),
@@ -391,8 +414,34 @@ static void test_pixbuf(GdkPixbuf *pixbuf)
 
 }
 
+static int
+fuzzer_decode(const char *fn)
+{
+    GdkPixbuf *uncompressed_pixbuf;
+    GByteArray compressed_data[1];
+    gchar *contents = NULL;
+    gsize length;
+
+    fuzzying = true;
+    if (!g_file_get_contents(fn, &contents, &length, NULL)) {
+        exit(1);
+    }
+    compressed_data->data = (void*) contents;
+    compressed_data->len = length;
+    uncompressed_pixbuf = quic_decode_to_pixbuf(compressed_data);
+
+    g_object_unref(uncompressed_pixbuf);
+    g_free(contents);
+
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
+    if (argc >= 3 && strcmp(argv[1], "--fuzzer-decode") == 0) {
+        return fuzzer_decode(argv[2]);
+    }
+
     if (argc >= 2) {
         for (int i = 1; i < argc; ++i) {
             GdkPixbuf *source_pixbuf;
