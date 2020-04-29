@@ -563,7 +563,11 @@ static void FNAME_DECL(uncompress_row_seg)(const PIXEL * const prev_row,
 do_run:
         state->waitcnt = stopidx - i;
         run_index = i;
-        run_end = i + decode_state_run(encoder, state);
+        run_end = decode_state_run(encoder, state);
+        if (run_end < 0 || run_end > (end - i)) {
+            encoder->usr->error(encoder->usr, "wrong RLE\n");
+        }
+        run_end += i;
 
         for (; i < run_end; i++) {
             UNCOMPRESS_PIX_START(&cur_row[i]);
