@@ -1136,7 +1136,7 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
     int channels;
     int bpc;
 
-    if (!encoder_reset(encoder, io_ptr, io_ptr_end)) {
+    if (!num_io_words || !encoder_reset(encoder, io_ptr, io_ptr_end)) {
         return QUIC_ERROR;
     }
 
