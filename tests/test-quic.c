@@ -71,7 +71,7 @@ static void quic_usr_free(QuicUsrContext *usr, void *ptr)
     g_free(ptr);
 }
 
-static int quic_usr_more_space(QuicUsrContext *usr, uint32_t **io_ptr, int rows_completed)
+static int quic_usr_more_space_encode(QuicUsrContext *usr, uint32_t **io_ptr, int rows_completed)
 {
     QuicData *quic_data = (QuicData *)usr;
     int initial_len = quic_data->dest->len;
@@ -82,6 +82,14 @@ static int quic_usr_more_space(QuicUsrContext *usr, uint32_t **io_ptr, int rows_
     return (quic_data->dest->len - initial_len)/4;
 }
 
+static int quic_usr_more_space_decode(QuicUsrContext *usr, uint32_t **io_ptr, int rows_completed)
+{
+    // currently all data are passed at initialization, decoder are not expected to
+    // read more data, beside during fuzzing, in this case quic_usr_error will
+    // be called
+    return 0;
+}
+
 
 static int quic_usr_more_lines(QuicUsrContext *usr, uint8_t **lines)
 {
@@ -89,14 +97,14 @@ static int quic_usr_more_lines(QuicUsrContext *usr, uint8_t **lines)
 }
 
 
-static void init_quic_data(QuicData *quic_data)
+static void init_quic_data(QuicData *quic_data, bool encode)
 {
     quic_data->usr.error = quic_usr_error;
     quic_data->usr.warn = quic_usr_warn;
     quic_data->usr.info = quic_usr_warn;
     quic_data->usr.malloc = quic_usr_malloc;
     quic_data->usr.free = quic_usr_free;
-    quic_data->usr.more_space = quic_usr_more_space;
+    quic_data->usr.more_space = encode ? quic_usr_more_space_encode : quic_usr_more_space_decode;
     quic_data->usr.more_lines = quic_usr_more_lines;
     quic_data->dest = g_byte_array_new();
 }
@@ -251,7 +259,7 @@ static GByteArray *quic_encode_from_pixbuf(GdkPixbuf *pixbuf, const ImageBuf *im
     QuicContext *quic;
     int encoded_size;
 
-    init_quic_data(&quic_data);
+    init_quic_data(&quic_data, true);
     g_byte_array_set_size(quic_data.dest, 1024);
 
     quic = quic_create(&quic_data.usr);
@@ -282,7 +290,7 @@ static GdkPixbuf *quic_decode_to_pixbuf(GByteArray *compressed_data)
     int height;
     int status;
 
-    init_quic_data(&quic_data);
+    init_quic_data(&quic_data, false);
     g_byte_array_free(quic_data.dest, TRUE);
     quic_data.dest = NULL;
 
