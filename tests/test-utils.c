@@ -18,6 +18,7 @@
 #undef NDEBUG
 #include <config.h>
 #include <assert.h>
+#include <string.h>
 
 #include <common/utils.h>
 
