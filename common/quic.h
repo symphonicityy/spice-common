@@ -40,10 +40,10 @@ typedef void *QuicContext;
 
 typedef struct QuicUsrContext QuicUsrContext;
 struct QuicUsrContext {
-    SPICE_ATTR_NORETURN
-    SPICE_ATTR_PRINTF(2, 3) void (*error)(QuicUsrContext *usr, const char *fmt, ...);
-    SPICE_ATTR_PRINTF(2, 3) void (*warn)(QuicUsrContext *usr, const char *fmt, ...);
-    SPICE_ATTR_PRINTF(2, 3) void (*info)(QuicUsrContext *usr, const char *fmt, ...);
+    SPICE_GNUC_NORETURN
+    SPICE_GNUC_PRINTF(2, 3) void (*error)(QuicUsrContext *usr, const char *fmt, ...);
+    SPICE_GNUC_PRINTF(2, 3) void (*warn)(QuicUsrContext *usr, const char *fmt, ...);
+    SPICE_GNUC_PRINTF(2, 3) void (*info)(QuicUsrContext *usr, const char *fmt, ...);
     void *(*malloc)(QuicUsrContext *usr, int size);
     void (*free)(QuicUsrContext *usr, void *ptr);
     int (*more_space)(QuicUsrContext *usr, uint32_t **io_ptr, int rows_completed);

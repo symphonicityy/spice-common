@@ -1763,8 +1763,8 @@ static pixman_image_t *canvas_scale_surface(pixman_image_t *src, const SpiceRect
     return surface;
 }
 
-SPICE_ATTR_NORETURN
-SPICE_ATTR_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const char *fmt, ...)
+SPICE_GNUC_NORETURN
+SPICE_GNUC_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const char *fmt, ...)
 {
     QuicData *usr_data = (QuicData *)usr;
     va_list ap;
@@ -1776,7 +1776,7 @@ SPICE_ATTR_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const ch
     longjmp(usr_data->jmp_env, 1);
 }
 
-SPICE_ATTR_PRINTF(2, 3) static void quic_usr_warn(QuicUsrContext *usr, const char *fmt, ...)
+SPICE_GNUC_PRINTF(2, 3) static void quic_usr_warn(QuicUsrContext *usr, const char *fmt, ...)
 {
     QuicData *usr_data = (QuicData *)usr;
     va_list ap;
@@ -1796,7 +1796,7 @@ static void quic_usr_free(QuicUsrContext *usr, void *ptr)
     free(ptr);
 }
 
-SPICE_ATTR_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *fmt, ...)
+SPICE_GNUC_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *fmt, ...)
 {
     LzData *usr_data = (LzData *)usr;
     va_list ap;
@@ -1806,8 +1806,8 @@ SPICE_ATTR_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *f
     va_end(ap);
 }
 
-SPICE_ATTR_NORETURN
-SPICE_ATTR_PRINTF(2, 3) static void lz_usr_error(LzUsrContext *usr, const char *fmt, ...)
+SPICE_GNUC_NORETURN
+SPICE_GNUC_PRINTF(2, 3) static void lz_usr_error(LzUsrContext *usr, const char *fmt, ...)
 {
     LzData *usr_data = (LzData *)usr;
     va_list ap;

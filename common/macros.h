@@ -21,16 +21,6 @@
 
 #include "verify.h"
 
-#if    __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 5)
-#define SPICE_ATTR_NORETURN                                  \
-    __attribute__((noreturn))
-#define SPICE_ATTR_PRINTF(a,b)                               \
-    __attribute__((format(printf,a,b)))
-#else
-#define SPICE_ATTR_NORETURN
-#define SPICE_ATTR_PRINTF
-#endif /* __GNUC__ */
-
 #ifdef __GNUC__
 #define SPICE_CONSTRUCTOR_FUNC(func_name) \
     static void __attribute__((constructor)) func_name(void)
