@@ -20,8 +20,8 @@
 #define COMPRESS_IMP
 
 #if defined(ONE_BYTE) || defined(FOUR_BYTE)
-#  define FARGS_DECL(arg1, ...) (Encoder *encoder, Channel *channel_a, arg1, ##__VA_ARGS__)
-#  define FARGS_CALL(arg1, ...) (encoder, channel_a, arg1, ##__VA_ARGS__)
+#  define FARGS_DECL(...) (Encoder *encoder, Channel *channel_a, __VA_ARGS__)
+#  define FARGS_CALL(...) (encoder, channel_a, __VA_ARGS__)
 #  define UNCOMPRESS_PIX_START(row) do { } while (0)
 #  define SET_a(pix, val) ((pix)->a = val)
 #  define GET_a(pix) ((pix)->a)
@@ -35,8 +35,8 @@
 #  define APPLY_ALL_COMP(macro, ...) \
     macro(a, ## __VA_ARGS__)
 #else
-#  define FARGS_DECL(arg1, ...) (Encoder *encoder, arg1, ##__VA_ARGS__)
-#  define FARGS_CALL(arg1, ...) (encoder, arg1, ##__VA_ARGS__)
+#  define FARGS_DECL(...) (Encoder *encoder, __VA_ARGS__)
+#  define FARGS_CALL(...) (encoder, __VA_ARGS__)
 #  define SAME_PIXEL(p1, p2)                               \
     (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) &&   \
      GET_b(p1) == GET_b(p2))

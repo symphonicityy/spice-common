@@ -216,12 +216,12 @@ typedef struct SpiceEmptyStruct {
 
 #define record(Name, ...)               RECORD_MACRO(Name, __VA_ARGS__)
 #define RECORD(Name,...)                RECORD_MACRO(Name, __VA_ARGS__)
-#define RECORD_MACRO(Name, Format,...)                                  \
-    RECORD_(RECORD,RECORD_COUNT_(__VA_ARGS__),Name,Format,##__VA_ARGS__)
-#define RECORD_(RECORD,RCOUNT,Name,Format,...)                          \
-    RECORD__(RECORD,RCOUNT,Name,Format,## __VA_ARGS__)
-#define RECORD__(RECORD,RCOUNT,Name,Format,...)                         \
-    RECORD##RCOUNT(Name,Format,##__VA_ARGS__)
+#define RECORD_MACRO(Name, ...)                                  \
+    RECORD_(RECORD,RECORD_COUNT_(__VA_ARGS__),Name,__VA_ARGS__)
+#define RECORD_(RECORD,RCOUNT,Name,...)                          \
+    RECORD__(RECORD,RCOUNT,Name,__VA_ARGS__)
+#define RECORD__(RECORD,RCOUNT,Name,...)                         \
+    RECORD##RCOUNT(Name,__VA_ARGS__)
 #define RECORD_COUNT_(...)      RECORD_COUNT__(Dummy,##__VA_ARGS__,_X,_X,_12,_11,_10,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
 #define RECORD_COUNT__(Dummy,_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_N,...)      _N
 
@@ -368,7 +368,7 @@ typedef struct SpiceEmptyStruct {
                      RECORDER_ARG(j),                   \
                      RECORDER_ARG(k),                   \
                      RECORDER_ARG(l))
-#define RECORD_X(Name, Format, ...)   RECORD_TOO_MANY_ARGS(printf(Format, __VA_ARGS__))
+#define RECORD_X(Name, ...)   RECORD_TOO_MANY_ARGS(printf(__VA_ARGS__))
 
 
 // Some ugly macro drudgery to make things easy to use. Adjust type.

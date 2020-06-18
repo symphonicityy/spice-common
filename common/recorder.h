@@ -62,8 +62,8 @@ typedef struct SpiceDummyTweak {
     const SpiceDummyTweak spice_recorder_tweak_ ## rec = { (value) }
 #define RECORDER_TWEAK(rec) \
     ((spice_recorder_tweak_ ## rec).tweak_value)
-#define RECORD(rec, format, ...) do { \
-        if (sizeof((spice_recorder_ ## rec).dummy)) printf(format, ##__VA_ARGS__); \
+#define RECORD(rec, ...) do { \
+        if (sizeof((spice_recorder_ ## rec).dummy)) printf(__VA_ARGS__); \
     } while(0)
 #define RECORD_TIMING_BEGIN(rec) \
     do { RECORD(rec, "begin");

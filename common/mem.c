@@ -22,9 +22,9 @@
 #include <string.h>
 
 #ifndef MALLOC_ERROR
-#define MALLOC_ERROR(format, ...) SPICE_STMT_START {    \
-    spice_error(format, ## __VA_ARGS__);                \
-    abort();                                            \
+#define MALLOC_ERROR(...) SPICE_STMT_START {    \
+    spice_error(__VA_ARGS__);                   \
+    abort();                                    \
 } SPICE_STMT_END
 #endif
 
