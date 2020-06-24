@@ -12,7 +12,6 @@ endif
 
 # some global vars
 spice_common_global_cflags = ['-DG_LOG_DOMAIN="Spice"',
-                              '-Werror',
                               '-Wno-unused-parameter']
 
 if get_option('alignment-checks')
