@@ -38,6 +38,11 @@
 
 #include <common/demarshallers.h>
 
+#ifdef _MSC_VER
+typedef __int64 off_t;
+#define ftello(f) _ftelli64((f))
+#endif
+
 typedef uint8_t *
 spice_parse_t(uint8_t *message_start, uint8_t *message_end,
               uint32_t channel, uint16_t message_type, SPICE_GNUC_UNUSED int minor,
