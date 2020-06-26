@@ -23,6 +23,8 @@
 
 #include <config.h>
 
+#if !defined(WIN32) || defined(__MINGW32__)
+
 #include "backtrace.h"
 
 #include <errno.h>
@@ -130,3 +132,4 @@ void spice_backtrace(void)
         spice_backtrace_backtrace();
     }
 }
+#endif
