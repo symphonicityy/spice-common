@@ -419,7 +419,7 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
         scope = writer.function("spice_message_marshallers_get" +  writer.public_suffix,
                                 "SpiceMessageMarshallers *",
                                 "void")
-        writer.writeln("static SpiceMessageMarshallers marshallers = {NULL};").newline()
+        writer.writeln("static SpiceMessageMarshallers marshallers = {0};").newline()
         for f in sorted(functions.keys()):
             member = f[len("spice_marshall_"):]
             if not member.startswith("msg"):
