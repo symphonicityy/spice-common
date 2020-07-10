@@ -1035,26 +1035,6 @@ pixman_image_t *spice_bitmap_try_as_pixman(int src_format,
 #define UINT32_FROM_LE(x) (x)
 #endif
 
-static inline uint32_t rgb_16_555_to_32(uint16_t color)
-{
-    uint32_t ret;
-
-    ret = ((color & 0x001f) << 3) | ((color & 0x001c) >> 2);
-    ret |= ((color & 0x03e0) << 6) | ((color & 0x0380) << 1);
-    ret |= ((color & 0x7c00) << 9) | ((color & 0x7000) << 4);
-
-    return ret;
-}
-
-static inline uint16_t rgb_32_to_16_555(uint32_t color)
-{
-    return
-        (((color) >> 3) & 0x001f) |
-        (((color) >> 6) & 0x03e0) |
-        (((color) >> 9) & 0x7c00);
-}
-
-
 static void bitmap_32_to_32(uint8_t* dest, int dest_stride,
                             uint8_t* src, int src_stride,
                             int width, uint8_t* end)
@@ -1386,6 +1366,25 @@ static void bitmap_1be_16_to_16_555(uint8_t* dest, int dest_stride,
 }
 
 #ifdef NOT_USED_ATM
+
+static inline uint32_t rgb_16_555_to_32(uint16_t color)
+{
+    uint32_t ret;
+
+    ret = ((color & 0x001f) << 3) | ((color & 0x001c) >> 2);
+    ret |= ((color & 0x03e0) << 6) | ((color & 0x0380) << 1);
+    ret |= ((color & 0x7c00) << 9) | ((color & 0x7000) << 4);
+
+    return ret;
+}
+
+static inline uint16_t rgb_32_to_16_555(uint32_t color)
+{
+    return
+        (((color) >> 3) & 0x001f) |
+        (((color) >> 6) & 0x03e0) |
+        (((color) >> 9) & 0x7c00);
+}
 
 static void bitmap_16_to_32(uint8_t* dest, int dest_stride,
                             uint8_t* src, int src_stride,
