@@ -203,7 +203,6 @@ static void FNAME_DECL(compress_row0_seg)(int i,
                                           const PIXEL * const cur_row,
                                           const int end,
                                           const unsigned int waitmask,
-                                          SPICE_GNUC_UNUSED const unsigned int bpc,
                                           const unsigned int bpc_mask)
 {
     DECLARE_STATE_VARIABLES;
@@ -247,14 +246,13 @@ static void FNAME_DECL(compress_row0_seg)(int i,
 static void FNAME_DECL(compress_row0)(const PIXEL *cur_row, unsigned int width)
 {
     DECLARE_STATE_VARIABLES;
-    const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     int pos = 0;
 
     while ((DEFwmimax > (int)state->wmidx) && (state->wmileft <= width)) {
         if (state->wmileft) {
             FNAME_CALL(compress_row0_seg)(pos, cur_row, pos + state->wmileft,
-                                          bppmask[state->wmidx], bpc, bpc_mask);
+                                          bppmask[state->wmidx], bpc_mask);
             width -= state->wmileft;
             pos += state->wmileft;
         }
@@ -266,7 +264,7 @@ static void FNAME_DECL(compress_row0)(const PIXEL *cur_row, unsigned int width)
 
     if (width) {
         FNAME_CALL(compress_row0_seg)(pos, cur_row, pos + width,
-                                      bppmask[state->wmidx], bpc, bpc_mask);
+                                      bppmask[state->wmidx], bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
         }
@@ -293,7 +291,6 @@ static void FNAME_DECL(compress_row_seg)(int i,
                                          const PIXEL * const cur_row,
                                          const int end,
                                          const unsigned int waitmask,
-                                         SPICE_GNUC_UNUSED const unsigned int bpc,
                                          const unsigned int bpc_mask)
 {
     DECLARE_STATE_VARIABLES;
@@ -359,7 +356,6 @@ static void FNAME_DECL(compress_row)(const PIXEL * const prev_row,
 
 {
     DECLARE_STATE_VARIABLES;
-    const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
@@ -367,7 +363,7 @@ static void FNAME_DECL(compress_row)(const PIXEL * const prev_row,
         if (state->wmileft) {
             FNAME_CALL(compress_row_seg)(pos, prev_row, cur_row,
                                          pos + state->wmileft, bppmask[state->wmidx],
-                                         bpc, bpc_mask);
+                                         bpc_mask);
             width -= state->wmileft;
             pos += state->wmileft;
         }
@@ -379,7 +375,7 @@ static void FNAME_DECL(compress_row)(const PIXEL * const prev_row,
 
     if (width) {
         FNAME_CALL(compress_row_seg)(pos, prev_row, cur_row, pos + width,
-                                     bppmask[state->wmidx], bpc, bpc_mask);
+                                     bppmask[state->wmidx], bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
         }
@@ -411,7 +407,6 @@ static void FNAME_DECL(uncompress_row0_seg)(int i,
                                             PIXEL * const cur_row,
                                             const int end,
                                             const unsigned int waitmask,
-                                            SPICE_GNUC_UNUSED const unsigned int bpc,
                                             const unsigned int bpc_mask)
 {
     DECLARE_STATE_VARIABLES;
@@ -462,7 +457,6 @@ static void FNAME_DECL(uncompress_row0)(PIXEL * const cur_row,
 
 {
     DECLARE_STATE_VARIABLES;
-    const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
@@ -471,7 +465,7 @@ static void FNAME_DECL(uncompress_row0)(PIXEL * const cur_row,
             FNAME_CALL(uncompress_row0_seg)(pos, cur_row,
                                             pos + state->wmileft,
                                             bppmask[state->wmidx],
-                                            bpc, bpc_mask);
+                                            bpc_mask);
             pos += state->wmileft;
             width -= state->wmileft;
         }
@@ -483,7 +477,7 @@ static void FNAME_DECL(uncompress_row0)(PIXEL * const cur_row,
 
     if (width) {
         FNAME_CALL(uncompress_row0_seg)(pos, cur_row, pos + width,
-                                        bppmask[state->wmidx], bpc, bpc_mask);
+                                        bppmask[state->wmidx], bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
         }
@@ -514,7 +508,6 @@ static void FNAME_DECL(uncompress_row_seg)(const PIXEL * const prev_row,
                                            PIXEL * const cur_row,
                                            int i,
                                            const int end,
-                                           SPICE_GNUC_UNUSED const unsigned int bpc,
                                            const unsigned int bpc_mask)
 {
     DECLARE_STATE_VARIABLES;
@@ -591,14 +584,13 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 
 {
     DECLARE_STATE_VARIABLES;
-    const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
     while ((DEFwmimax > (int)state->wmidx) && (state->wmileft <= width)) {
         if (state->wmileft) {
             FNAME_CALL(uncompress_row_seg)(prev_row, cur_row, pos,
-                                           pos + state->wmileft, bpc, bpc_mask);
+                                           pos + state->wmileft, bpc_mask);
             pos += state->wmileft;
             width -= state->wmileft;
         }
@@ -610,7 +602,7 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 
     if (width) {
         FNAME_CALL(uncompress_row_seg)(prev_row, cur_row, pos,
-                                       pos + width, bpc, bpc_mask);
+                                       pos + width, bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
         }
