@@ -1031,12 +1031,18 @@ enum8 mouse_button {
     RIGHT,
     UP,
     DOWN,
+    SIDE,
+    EXTRA,
 };
 
 flags16 mouse_button_mask {
     LEFT,
     MIDDLE,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN,
+    SIDE,
+    EXTRA,
 };
 
 channel InputsChannel : BaseChannel {
