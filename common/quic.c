@@ -334,7 +334,7 @@ static void correlate_init(QuicFamily *family, int bpc)
     }
 }
 
-static void golomb_coding_slow(QuicFamily *family, const BYTE n, const unsigned int l,
+static void golomb_coding_slow(const QuicFamily *family, const BYTE n, const unsigned int l,
                                unsigned int * const codeword,
                                unsigned int * const codewordlen)
 {
