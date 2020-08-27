@@ -245,6 +245,31 @@ agent_message_graphics_device_info_check_from_le(const VDAgentMessage *message_h
     return AGENT_CHECK_NO_ERROR;
 }
 
+static AgentCheckResult
+agent_message_monitors_config_from_le(const VDAgentMessage *message_header, uint8_t *message)
+{
+    uint32_from_le(message, sizeof(VDAgentMonitorsConfig), 0);
+    VDAgentMonitorsConfig *vdata = (VDAgentMonitorsConfig*) message;
+    vdata->flags &= ~(VD_AGENT_CONFIG_MONITORS_FLAG_USE_POS|
+        VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE);
+    size_t element_size = sizeof(vdata->monitors[0]);
+    if ((vdata->flags & VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE) != 0) {
+        element_size += sizeof(VDAgentMonitorMM);
+    }
+    const size_t max_monitors =
+        (message_header->size - sizeof(*vdata)) / element_size;
+    if (vdata->num_of_monitors > max_monitors) {
+        return AGENT_CHECK_TRUNCATED;
+    }
+    uint32_from_le(message, sizeof(vdata->monitors[0]) * vdata->num_of_monitors,
+                   sizeof(*vdata));
+    if ((vdata->flags & VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE) != 0) {
+        uint16_from_le(message, sizeof(VDAgentMonitorMM) * vdata->num_of_monitors,
+                       sizeof(*vdata) + sizeof(vdata->monitors[0]) * vdata->num_of_monitors);
+    }
+    return AGENT_CHECK_NO_ERROR;
+}
+
 AgentCheckResult
 agent_check_message(const VDAgentMessage *message_header, uint8_t *message,
                     const uint32_t *capabilities, uint32_t capabilities_size)
@@ -266,16 +291,9 @@ agent_check_message(const VDAgentMessage *message_header, uint8_t *message,
     case VD_AGENT_ANNOUNCE_CAPABILITIES:
         uint32_from_le(message, message_header->size, 0);
         break;
-    case VD_AGENT_MONITORS_CONFIG: {
-        uint32_from_le(message, message_header->size, 0);
-        VDAgentMonitorsConfig *vdata = (VDAgentMonitorsConfig*) message;
-        const size_t max_monitors =
-            (message_header->size - sizeof(*vdata)) / sizeof(vdata->monitors[0]);
-        if (vdata->num_of_monitors > max_monitors) {
-            return AGENT_CHECK_TRUNCATED;
-        }
-        break;
-    }
+    case VD_AGENT_MONITORS_CONFIG:
+        return agent_message_monitors_config_from_le(message_header, message);
+
     case VD_AGENT_CLIPBOARD:
     case VD_AGENT_CLIPBOARD_GRAB:
     case VD_AGENT_CLIPBOARD_REQUEST:
