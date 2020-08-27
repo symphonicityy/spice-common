@@ -196,20 +196,21 @@ static int verify_hostname(X509* cert, const char *hostname)
                     return 1;
                 }
             } else if (name->type == GEN_IPADD) {
-                GInetAddress * ip = NULL;
-                const guint8 * ip_binary = NULL;
-                int alt_ip_len = 0;
-                int ip_len = 0;
+                GInetAddress * ip;
+                const guint8 * ip_binary;
+                int alt_ip_len;
+                int ip_len;
 
                 found_dns_name = 1;
 
                 ip = g_inet_address_new_from_string(hostname);
-                if (ip != NULL) {
-                    ip_len = g_inet_address_get_native_size(ip);
-                    ip_binary = g_inet_address_to_bytes(ip);
-                } else {
+                if (ip == NULL) {
                     spice_warning("Could not parse hostname: %s", hostname);
+                    continue;
                 }
+
+                ip_len = g_inet_address_get_native_size(ip);
+                ip_binary = g_inet_address_to_bytes(ip);
 
                 alt_ip_len = ASN1_STRING_length(name->d.iPAddress);
 
@@ -229,9 +230,7 @@ static int verify_hostname(X509* cert, const char *hostname)
                     GENERAL_NAMES_free(subject_alt_names);
                     return 1;
                 }
-                if (ip != NULL) {
-                    g_object_unref(ip);
-                }
+                g_object_unref(ip);
             }
         }
         GENERAL_NAMES_free(subject_alt_names);
