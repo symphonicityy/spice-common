@@ -564,7 +564,7 @@ static int decode_state_run(Encoder *encoder, CommonState *state)
         decode_eatbits(encoder, state->melclen);
     }
 
-    /* adjust melcoder parameters */
+    /* adjust melcorder parameters */
     if (state->melcstate) {
         state->melclen = J[--state->melcstate];
         state->melcorder = (1U << state->melclen);
