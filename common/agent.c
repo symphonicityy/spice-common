@@ -250,8 +250,8 @@ agent_message_monitors_config_from_le(const VDAgentMessage *message_header, uint
 {
     uint32_from_le(message, sizeof(VDAgentMonitorsConfig), 0);
     VDAgentMonitorsConfig *vdata = (VDAgentMonitorsConfig*) message;
-    vdata->flags &= ~(VD_AGENT_CONFIG_MONITORS_FLAG_USE_POS|
-        VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE);
+    vdata->flags &= VD_AGENT_CONFIG_MONITORS_FLAG_USE_POS|
+        VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE;
     size_t element_size = sizeof(vdata->monitors[0]);
     if ((vdata->flags & VD_AGENT_CONFIG_MONITORS_FLAG_PHYSICAL_SIZE) != 0) {
         element_size += sizeof(VDAgentMonitorMM);
