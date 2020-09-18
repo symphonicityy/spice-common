@@ -73,7 +73,6 @@ def SPICE_BNF():
         struct_    = Keyword("struct")
         message_   = Keyword("message")
         image_size_ = Keyword("image_size")
-        bytes_     = Keyword("bytes")
         cstring_   = Keyword("cstring")
         switch_    = Keyword("switch")
         default_   = Keyword("default")
@@ -94,9 +93,8 @@ def SPICE_BNF():
         attribute = Group(Combine ("@" + identifier) + Optional(lparen + delimitedList(attributeValue) + rparen))
         attributes = Group(ZeroOrMore(attribute))
         arraySizeSpecImage = Group(image_size_ + lparen + integer + comma + identifier + comma + identifier + rparen)
-        arraySizeSpecBytes = Group(bytes_ + lparen + identifier + comma + identifier + rparen)
         arraySizeSpecCString = Group(cstring_ + lparen + rparen)
-        arraySizeSpec = lbrack + Optional(identifier ^ integer ^ arraySizeSpecImage ^ arraySizeSpecBytes ^arraySizeSpecCString, default="") + rbrack
+        arraySizeSpec = lbrack + Optional(identifier ^ integer ^ arraySizeSpecImage ^ arraySizeSpecCString, default="") + rbrack
         variableDef = Group(typeSpec + Optional("*", default=None) + identifier + Optional(arraySizeSpec, default=None) + attributes - semi) \
             .setParseAction(parseVariableDef)
 

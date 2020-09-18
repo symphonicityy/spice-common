@@ -448,11 +448,6 @@ class ArrayType(Type):
             return False
         return self.size[0] == "image_size"
 
-    def is_bytes_length(self):
-        if isinstance(self.size, int) or isinstance(self.size, str):
-            return False
-        return self.size[0] == "bytes"
-
     def is_cstring_length(self):
         if isinstance(self.size, int) or isinstance(self.size, str):
             return False

@@ -179,8 +179,6 @@ def get_array_size(array, container_src):
             return "((((uint64_t) %s + 7U) / 8U ) * %s)" % (width_v, rows_v)
         else:
             return "((((uint64_t) %s * %s + 7U) / 8U ) * %s)" % (bpp, width_v, rows_v)
-    elif array.is_bytes_length():
-        return container_src.get_ref(array.size[2])
     else:
         raise NotImplementedError("TODO array size type not handled yet: %s"  % array)
 
@@ -192,7 +190,6 @@ def write_array_marshaller(writer, member, array, container_src, scope):
         return
 
     nelements = get_array_size(array, container_src)
-    is_byte_size = array.is_bytes_length()
 
     element = "%s__element" % member.name
 
@@ -208,11 +205,6 @@ def write_array_marshaller(writer, member, array, container_src, scope):
 
     writer.assign(element_array, container_src.get_ref(member.name))
 
-    if is_byte_size:
-        size_start_var = "%s__size_start" % member.name
-        scope.variable_def("size_t", size_start_var)
-        writer.assign(size_start_var, "spice_marshaller_get_size(m)")
-
     with writer.index() as index:
         with writer.for_loop(index, nelements) as array_scope:
             if element_type.is_primitive():
@@ -225,12 +217,6 @@ def write_array_marshaller(writer, member, array, container_src, scope):
                 writer.todo("array element unhandled type").newline()
 
             writer.statement("%s++" % element_array)
-
-    if is_byte_size:
-        size_var = member.container.lookup_member(array.size[1])
-        size_var_type = size_var.member_type
-        var = "%s__ref" % array.size[1]
-        writer.statement("spice_marshaller_set_%s(m, %s, spice_marshaller_get_size(m) - %s)" % (size_var_type.primitive_type(), var, size_start_var))
 
 def write_pointer_marshaller(writer, member, src):
     t = member.member_type

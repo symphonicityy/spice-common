@@ -317,15 +317,8 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
     array = item.type
     if item.member:
         array.check_valid(item.member)
-    is_byte_size = False
     element_type = array.element_type
-    if array.is_bytes_length():
-        nelements = "%s__nbytes" %(item.prefix)
-        real_nelements = "%s__nelements" %(item.prefix)
-        if not parent_scope.variable_defined(real_nelements):
-            parent_scope.variable_def("uint64_t", real_nelements)
-    else:
-        nelements = "%s__nelements" %(item.prefix)
+    nelements = "%s__nelements" %(item.prefix)
     if not parent_scope.variable_defined(nelements):
         parent_scope.variable_def("uint64_t", nelements)
 
@@ -355,11 +348,6 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
             writer.assign(nelements, "(((uint64_t) %s + 7U) / 8U ) * %s" % (width_v, rows_v))
         else:
             writer.assign(nelements, "((%sU * (uint64_t) %s + 7U) / 8U ) * %s" % (bpp, width_v, rows_v))
-    elif array.is_bytes_length():
-        is_byte_size = True
-        v = write_read_primitive(writer, start, container, array.size[1], scope)
-        writer.assign(nelements, v)
-        writer.assign(real_nelements, 0)
     elif array.is_cstring_length():
         writer.todo("cstring array size type not handled yet")
     else:
@@ -370,10 +358,6 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
     nw_size = item.nw_size()
     mem_size = item.mem_size()
     extra_size = item.extra_size()
-
-    if is_byte_size and want_nw_size:
-        writer.assign(nw_size, nelements)
-        want_nw_size = False
 
     if element_type.is_fixed_nw_size() and want_nw_size:
         element_size = element_type.get_fixed_nw_size()
@@ -396,7 +380,7 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
             writer.assign(extra_size, "sizeof(SpiceChunks) + sizeof(SpiceChunk)")
             want_extra_size = False
 
-    if element_type.is_fixed_sizeof() and want_mem_size and not is_byte_size:
+    if element_type.is_fixed_sizeof() and want_mem_size:
         # TODO: Overflow check the multiplication
         if array.has_attr("ptr_array"):
             writer.assign(mem_size, "sizeof(void *) + SPICE_ALIGN(%s * %s, 4)" % (element_type.sizeof(), nelements))
@@ -413,9 +397,6 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
 
     start2 = codegen.increment_identifier(start)
     scope.variable_def("uint8_t *", "%s = %s" % (start2, item.get_position()))
-    if is_byte_size:
-        start2_end = "%s_array_end" % start2
-        scope.variable_def("uint8_t *", start2_end)
 
     element_item = ItemInfo(element_type, "%s__element" % item.prefix, start2)
 
@@ -441,13 +422,8 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
         want_element_nw_size = True
         start_increment = element_nw_size
 
-    if is_byte_size:
-        writer.assign(start2_end, "%s + %s" % (start2, nelements))
-
-    with writer.index(no_block = is_byte_size) as index:
-        with writer.while_loop("%s < %s" % (start2, start2_end) ) if is_byte_size else writer.for_loop(index, nelements) as scope:
-            if is_byte_size:
-                writer.increment(real_nelements, 1)
+    with writer.index() as index:
+        with writer.for_loop(index, nelements) as scope:
             write_validate_item(writer, container, element_item, scope, parent_scope, start2,
                                 want_element_nw_size, want_mem_size, want_extra_size)
 
@@ -462,9 +438,6 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
                 writer.increment(extra_size, element_extra_size)
 
             writer.increment(start2, start_increment)
-    if is_byte_size:
-        writer.error_check("%s != %s" % (start2, start2_end))
-        write_write_primitive(writer, start, container, array.size[1], real_nelements)
 
 def write_validate_struct_item(writer, container, item, scope, parent_scope, start,
                                want_nw_size, want_mem_size, want_extra_size):
@@ -699,8 +672,6 @@ def read_array_len(writer, prefix, array, dest, scope, is_ptr):
             writer.assign(nelements, "(((uint64_t) %s + 7U) / 8U ) * %s" % (width_v, rows_v))
         else:
             writer.assign(nelements, "((%sU * (uint64_t) %s + 7U) / 8U ) * %s" % (bpp, width_v, rows_v))
-    elif array.is_bytes_length():
-        writer.assign(nelements, dest.get_ref(array.size[2]))
     else:
         raise NotImplementedError("TODO array size type not handled yet")
     return nelements
@@ -801,8 +772,6 @@ def write_parse_ptr_function(writer, target_type):
     return parse_function
 
 def write_array_parser(writer, member, nelements, array, dest, scope):
-    is_byte_size = array.is_bytes_length()
-
     element_type = array.element_type
     if member:
         array_start = dest.get_ref(member.name)

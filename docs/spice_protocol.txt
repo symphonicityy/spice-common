@@ -124,9 +124,8 @@ Arrays
 As seen above the easiest way to define an array size is specifying a constant value.
 However there are multiple way to specify the size
 
-    array_size ::= <integer>|<identifier>|""|<array_size_image>|<array_size_bytes>|<array_size_cstring> ;
+    array_size ::= <integer>|<identifier>|""|<array_size_image>|<array_size_cstring> ;
     array_size_image ::= "image_size" "(" <integer> "," <identifier> ")" ;
-    array_size_bytes ::= "bytes" "(" <identifier> "," <identifier> ")" ;
     array_size_cstring ::= "cstring()" ;
 
 We already seen integer.
@@ -157,8 +156,6 @@ TODO: can a [] array not be the last and what happens ??
     uint8 raw_image[image_size(8, width, height)];
 
 could contain row data in raw_image. The constant `8` is the bit size of the image.
-
-TODO `bytes`
 
 `cstring` allows to specify NUL-terminated sequence so having
 
