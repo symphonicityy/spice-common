@@ -641,6 +641,8 @@ class Member(Containee):
         for i in propagated_attributes:
             if self.has_attr(i):
                 self.member_type.attributes[i] = self.attributes[i]
+                if self.member_type.is_pointer():
+                    self.member_type.target_type.attributes[i] = self.attributes[i]
         return self
 
     def contains_member(self, member):
