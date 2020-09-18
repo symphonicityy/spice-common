@@ -553,6 +553,8 @@ class ArrayType(Type):
             return writer.writeln('%s *%s[0];' % (self.c_type(), name))
         if member.has_end_attr():
             return writer.writeln('%s %s[0];' % (self.c_type(), name))
+        if self.is_constant_length() and self.has_attr("zero_terminated"):
+            return writer.writeln('%s %s[%s];' % (self.c_type(), name, self.size + 1))
         if self.is_constant_length():
             return writer.writeln('%s %s[%s];' % (self.c_type(), name, self.size))
         if self.is_identifier_length():

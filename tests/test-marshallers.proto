@@ -24,6 +24,17 @@ channel TestChannel {
         uint32 dummy[2];
         uint8 data[] @end;
     } LenMessage;
+
+    message {
+        uint8 txt1[4] @zero_terminated;
+        uint8 sep1;
+        uint32 txt2_len;
+        uint8 *txt2[txt2_len] @zero_terminated;
+        uint8 txt3[txt2_len] @to_ptr @zero_terminated;
+        uint32 n;
+        uint16 txt4_len;
+        uint8 txt4[txt4_len] @end @zero_terminated;
+    } @declare ZeroLen1;
 };
 
 protocol Spice {

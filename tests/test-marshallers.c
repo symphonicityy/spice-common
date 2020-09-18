@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2015-2018 Red Hat, Inc.
+   Copyright (C) 2015-2021 Red Hat, Inc.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -90,6 +90,44 @@ uint8_t * spice_parse_msg(uint8_t *message_start, uint8_t *message_end,
                           uint32_t channel, uint16_t message_type, int minor,
                           size_t *size_out, message_destructor_t *free_message);
 
+static void test_zerolen1(void)
+{
+    static uint8_t data[] = {
+        'd', 'a', 't', 'a', // txt1
+        123, // sep1
+        4, 0, 0, 0, // len
+        26, 0, 0, 0, // ptr to txt2
+        'n','e','k','o', // txt3
+        12, 13, 14, 15, // n
+        3, 0, // txt4_len
+        'b','a','r', // txt4
+        'f', 'o', 'o', '!', // string
+        'x', 'x', // garbage at the end
+    };
+
+    size_t msg_len;
+    message_destructor_t free_message;
+
+    // demarshal array with @zero_terminated data
+    SpiceMsgMainZeroLen1 *msg = (SpiceMsgMainZeroLen1 *)
+        spice_parse_msg(data, data + sizeof(data), SPICE_CHANNEL_MAIN, SPICE_MSG_MAIN_ZEROLEN1,
+                        0, &msg_len, &free_message);
+
+    g_assert_nonnull(msg);
+    g_assert_cmpmem(msg->txt1, 5, "data", 5);
+    g_assert_cmpint(msg->sep1, ==, 123);
+    g_assert_cmpint(msg->txt2_len, ==, 4);
+    g_assert_cmpint(msg->n , ==, 0x0f0e0d0c);
+    g_assert_nonnull(msg->txt2);
+    g_assert_cmpmem(msg->txt2, 5, "foo!", 5);
+    g_assert_nonnull(msg->txt3);
+    g_assert_cmpmem(msg->txt3, 5, "neko", 5);
+    g_assert_cmpint(msg->txt4_len, ==, 3);
+    g_assert_cmpmem(msg->txt4, 4, "bar", 4);
+
+    free_message((uint8_t *) msg);
+}
+
 int main(void)
 {
     SpiceMarshaller *marshaller;
@@ -134,6 +172,8 @@ int main(void)
         free(data);
     }
     spice_marshaller_reset(marshaller);
+
+    test_zerolen1();
 
     SpiceMsgMainZeroes msg_zeroes = { 0x0102 };
 

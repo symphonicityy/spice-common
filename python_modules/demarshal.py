@@ -384,6 +384,10 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
         # TODO: Overflow check the multiplication
         if array.has_attr("ptr_array"):
             writer.assign(mem_size, "sizeof(void *) + SPICE_ALIGN(%s * %s, 4)" % (element_type.sizeof(), nelements))
+        elif array.has_attr('zero_terminated'):
+            # don't use +1 here to avoid possible integer overflow or suboptimizations
+            writer.assign(mem_size, "%s * %s + %s" % (element_type.sizeof(), nelements, element_type.sizeof()))
+            writer.assign(mem_size, "SPICE_ALIGN(%s, 4)" % mem_size);
         else:
             writer.assign(mem_size, "%s * %s" % (element_type.sizeof(), nelements))
         want_mem_size = False
@@ -724,7 +728,10 @@ def write_switch_parser(writer, container, switch, dest, scope):
 
 def write_parse_ptr_function(writer, target_type):
     if target_type.is_array():
-        parse_function = "parse_array_%s" % target_type.element_type.primitive_type()
+        if target_type.has_attr("zero_terminated"):
+            parse_function = "parse_array_%s_terminated" % target_type.element_type.primitive_type()
+        else:
+            parse_function = "parse_array_%s" % target_type.element_type.primitive_type()
     else:
         parse_function = "parse_struct_%s" % target_type.c_type()
     if writer.is_generated("parser", parse_function):
@@ -787,10 +794,28 @@ def write_array_parser(writer, member, nelements, array, dest, scope):
         if array.has_attr("ptr_array"):
             raise Exception("Attribute ptr_array not supported for arrays of int8/uint8")
         writer.statement("memcpy(%s, in, %s)" % (array_start, nelements))
+        if array.has_attr("zero_terminated"):
+            indentation = writer.indentation
+            writer.indentation = 0;
+            writer.writeln("#if defined(__GNUC__)")
+            writer.writeln("#pragma GCC diagnostic push")
+            writer.writeln("#pragma GCC diagnostic ignored \"-Wstringop-overflow\"")
+            writer.writeln("#endif")
+            writer.indentation = indentation;
+            writer.assign("((char *) (%s))[%s]" % (array_start, nelements), 0)
+            writer.indentation = 0;
+            writer.writeln("#if defined(__GNUC__)")
+            writer.writeln("#pragma GCC diagnostic pop")
+            writer.writeln("#endif")
+            writer.indentation = indentation;
         writer.increment("in", nelements)
         if at_end:
             writer.increment("end", nelements)
+            if array.has_attr("zero_terminated"):
+                writer.increment("end", 1)
     else:
+        if array.has_attr("zero_terminated"):
+            raise Exception("Attribute zero_terminated specified for wrong array")
         with writer.index() as index:
             if member:
                 array_pos = "%s[%s]" % (array_start, index)

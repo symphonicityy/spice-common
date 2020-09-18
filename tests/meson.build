@@ -28,7 +28,13 @@ if spice_common_generate_client_code or spice_common_generate_server_code
   targets = [
       ['test_marshallers', test_proto, 'generated_test_marshallers.c', ['--generate-marshallers', '--server', '--include', 'test-marshallers.h', '@INPUT@', '@OUTPUT@']],
       ['test_marshallers_h', test_proto, 'generated_test_marshallers.h', ['--generate-marshallers', '--server', '--include', 'test-marshallers.h', '-H', '@INPUT@', '@OUTPUT@']],
-      ['test_demarshallers', test_proto, 'generated_test_demarshallers.c', ['--generate-demarshallers', '--client', '--include', 'test-marshallers.h', '@INPUT@', '@OUTPUT@']],
+      ['test_demarshallers', test_proto, 'generated_test_demarshallers.c', [
+        '--generate-demarshallers',
+        '--client',
+        '--include', 'test-marshallers.h',
+        '--generated-declaration-file', 'generated_test_messages.h',
+        '@INPUT@', '@OUTPUT@'
+      ]],
       ['test_enums_h', test_proto, 'generated_test_enums.h', ['-e', '@INPUT@', '@OUTPUT@']],
   ]
 
