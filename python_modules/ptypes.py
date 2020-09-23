@@ -18,7 +18,7 @@ def get_named_types():
 # only to attributes that affect pointer or array attributes, as these
 # are member local types, unlike e.g. a Struct that may be used by
 # other members
-propagated_attributes=["ptr_array", "nonnull", "chunk"]
+propagated_attributes=["ptr_array", "nonnull", "chunk", "zero_terminated"]
 
 valid_attributes_generic=set([
     # embedded/appended at the end of the resulting C structure
