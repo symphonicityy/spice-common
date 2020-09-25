@@ -86,6 +86,16 @@ attributes_with_arguments=set([
     'virtual',
 ])
 
+# these attributes specify output format, only one can be set
+output_attributes = set([
+    'end',
+    'to_ptr',
+    'as_ptr',
+    'ptr_array',
+    'zero',
+    'chunk',
+])
+
 def fix_attributes(attribute_list, valid_attributes=valid_attributes_generic):
     attrs = {}
     for attr in attribute_list:
@@ -100,9 +110,8 @@ def fix_attributes(attribute_list, valid_attributes=valid_attributes_generic):
             raise Exception("Attribute %s has more than 1 argument" % name)
         attrs[name] = lst
 
-    # these attributes specify output format, only one can be set
-    output_attrs = set(['end', 'to_ptr', 'as_ptr', 'ptr_array', 'zero', 'chunk'])
-    if len(output_attrs.intersection(attrs.keys())) > 1:
+    # only one output attribute can be set
+    if len(output_attributes.intersection(attrs.keys())) > 1:
         raise Exception("Multiple output type attributes specified %s" % output_attrs)
 
     return attrs
