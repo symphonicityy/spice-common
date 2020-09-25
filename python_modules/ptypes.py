@@ -501,6 +501,16 @@ class ArrayType(Type):
         return self.element_type.c_type()
 
     def check_valid(self, member):
+        # If the size is not constant the array has to be allocated in some
+        # way in the output and so there must be a specification for the
+        # output (as default is write into the C structure all data).
+        # The only exceptions are when the length is constant (in this case
+        # a constant length array in the C structure is used) or a pointer
+        # (in this case the pointer allocate the array).
+        if (not self.is_constant_length()
+            and len(output_attributes.intersection(member.attributes.keys())) == 0
+            and not member.member_type.is_pointer()):
+            raise Exception("Array length must be a constant or some output specifiers must be set")
         # These attribute corresponds to specific structure size
         if member.has_attr("chunk") or member.has_attr("as_ptr"):
             return
