@@ -48,7 +48,7 @@ spice_parse_t(uint8_t *message_start, uint8_t *message_end,
               uint32_t channel, uint16_t message_type, SPICE_GNUC_UNUSED int minor,
               size_t *size_out, message_destructor_t *free_message);
 
-spice_parse_t spice_parse_msg, spice_parse_reply;
+spice_parse_t spice_parse_msg, spice_parse_reply, spice_parse_msg_test;
 
 int main(int argc, char **argv)
 {
@@ -78,9 +78,23 @@ int main(int argc, char **argv)
     uint8_t channel;
     READ(channel);
 
-    // Low bit select client or server
-    spice_parse_t *parse_func = channel & 1 ? spice_parse_reply : spice_parse_msg;
-    channel >>= 1;
+    // Low bits select client/server and test
+    spice_parse_t *parse_func;
+    switch (channel & 3) {
+    case 0:
+        parse_func = spice_parse_reply;
+        break;
+    case 1:
+        parse_func = spice_parse_msg;
+        break;
+    case 3:
+        parse_func = spice_parse_msg_test;
+        break;
+    default:
+        fclose(f);
+        return 1;
+    }
+    channel >>= 2;
 
     uint16_t type;
     READ(type);

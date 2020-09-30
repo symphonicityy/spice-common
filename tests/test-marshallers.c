@@ -30,6 +30,9 @@
 
 #define NUM_CHANNELS 3u
 
+spice_parse_channel_func_t
+spice_get_server_channel_parser_test(uint32_t channel, unsigned int *max_message_type);
+
 static void test_overflow(SpiceMarshaller *m)
 {
     SpiceMsgChannels *msg;
@@ -63,7 +66,7 @@ static void test_overflow(SpiceMarshaller *m)
     *((uint32_t *) data) = 0x80000002u;
 
     // extract the message
-    func = spice_get_server_channel_parser(SPICE_CHANNEL_MAIN, &max_message_type);
+    func = spice_get_server_channel_parser_test(SPICE_CHANNEL_MAIN, &max_message_type);
     g_assert_nonnull(func);
     out = func(data, data+len, SPICE_MSG_MAIN_CHANNELS_LIST, 0, &len, &free_output);
     g_assert_null(out);
@@ -86,9 +89,9 @@ static uint8_t expected_data[] = { 123, /* dummy byte */
 };
 
 typedef void (*message_destructor_t)(uint8_t *message);
-uint8_t * spice_parse_msg(uint8_t *message_start, uint8_t *message_end,
-                          uint32_t channel, uint16_t message_type, int minor,
-                          size_t *size_out, message_destructor_t *free_message);
+uint8_t * spice_parse_msg_test(uint8_t *message_start, uint8_t *message_end,
+                               uint32_t channel, uint16_t message_type, int minor,
+                               size_t *size_out, message_destructor_t *free_message);
 
 static void test_zerolen1(void)
 {
@@ -110,8 +113,8 @@ static void test_zerolen1(void)
 
     // demarshal array with @zero_terminated data
     SpiceMsgMainZeroLen1 *msg = (SpiceMsgMainZeroLen1 *)
-        spice_parse_msg(data, data + sizeof(data), SPICE_CHANNEL_MAIN, SPICE_MSG_MAIN_ZEROLEN1,
-                        0, &msg_len, &free_message);
+        spice_parse_msg_test(data, data + sizeof(data), SPICE_CHANNEL_MAIN, SPICE_MSG_MAIN_ZEROLEN1,
+                             0, &msg_len, &free_message);
 
     g_assert_nonnull(msg);
     g_assert_cmpmem(msg->txt1, 5, "data", 5);
@@ -156,8 +159,9 @@ int main(void)
 
     // test demarshaller
     msg = (SpiceMsgMainShortDataSubMarshall *)
-        spice_parse_msg(data, data + len, SPICE_CHANNEL_MAIN, SPICE_MSG_MAIN_SHORTDATASUBMARSHALL,
-                        0, &msg_len, &free_message);
+        spice_parse_msg_test(data, data + len, SPICE_CHANNEL_MAIN,
+                             SPICE_MSG_MAIN_SHORTDATASUBMARSHALL,
+                             0, &msg_len, &free_message);
 
     g_assert_nonnull(msg);
     g_assert_cmpint(msg->dummy_byte, ==, 123);
@@ -191,8 +195,8 @@ int main(void)
     len = 4;
     data = g_new0(uint8_t, len);
     memset(data, 0, len);
-    msg = (SpiceMsgMainShortDataSubMarshall *) spice_parse_msg(data, data + len, 1, 3, 0,
-                                                               &msg_len, &free_message);
+    msg = (SpiceMsgMainShortDataSubMarshall *) spice_parse_msg_test(data, data + len, 1, 3, 0,
+                                                                    &msg_len, &free_message);
     g_assert_null(msg);
     g_free(data);
 
