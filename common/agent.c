@@ -132,8 +132,8 @@ static void uint16_from_le(uint8_t *_msg, uint32_t size, uint32_t offset)
     uint32_t i;
     uint16_unaligned_t *msg = (uint16_unaligned_t *)(_msg + offset);
 
-    /* offset - size % 2 should be 0 - extra bytes are ignored */
-    for (i = 0; i < (size - offset) / 2; i++) {
+    /* size % 2 should be 0 - extra bytes are ignored */
+    for (i = 0; i < size / 2; i++) {
         FIX_ENDIAN16(msg[i].v);
     }
 }
@@ -143,8 +143,8 @@ static void uint32_from_le(uint8_t *_msg, uint32_t size, uint32_t offset)
     uint32_t i;
     uint32_unaligned_t *msg = (uint32_unaligned_t *)(_msg + offset);
 
-    /* offset - size % 4 should be 0 - extra bytes are ignored */
-    for (i = 0; i < (size - offset) / 4; i++) {
+    /* size % 4 should be 0 - extra bytes are ignored */
+    for (i = 0; i < size / 4; i++) {
         FIX_ENDIAN32(msg[i].v);
     }
 }
@@ -168,7 +168,7 @@ agent_message_clipboard_from_le(const VDAgentMessage *message_header, uint8_t *d
         FIX_ENDIAN32(data_type->v);
         break;
     case VD_AGENT_CLIPBOARD_GRAB:
-        uint32_from_le(data, message_header->size, min_size);
+        uint32_from_le(data, message_header->size - min_size, min_size);
         break;
     case VD_AGENT_CLIPBOARD_RELEASE:
         // empty
@@ -318,7 +318,7 @@ agent_check_message(const VDAgentMessage *message_header, uint8_t *message,
         if (vdata->nchannels > max_channels) {
             return AGENT_CHECK_TRUNCATED;
         }
-        uint16_from_le(message, message_header->size, sizeof(*vdata));
+        uint16_from_le(message, message_header->size - sizeof(*vdata), sizeof(*vdata));
         break;
     }
     default:
