@@ -47,7 +47,7 @@ if spice_common_generate_client_code or spice_common_generate_server_code
         '--generate-demarshallers',
         '--client',
         '--include', 'test-marshallers.h',
-        '--generated-declaration-file', 'generated_test_messages.h',
+        '--generated-declaration-file', meson.current_build_dir() /'generated_test_messages.h',
         '@INPUT@', '@OUTPUT@'
       ]],
       ['test_enums_h', test_proto, 'generated_test_enums.h', [
