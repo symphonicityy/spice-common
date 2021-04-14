@@ -116,6 +116,7 @@ TEST_MARSHALLERS =				\
 	generated_test_marshallers.h		\
 	generated_test_demarshallers.c		\
 	generated_test_enums.h			\
+	generated_test_messages.h		\
 	$(NULL)
 
 BUILT_SOURCES = $(TEST_MARSHALLERS)
