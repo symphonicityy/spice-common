@@ -25,9 +25,6 @@
 #include <math.h>
 
 #ifdef USE_LZ4
-#ifndef WIN32
-#include <arpa/inet.h>
-#endif
 #include <lz4.h>
 #endif
 #include <spice/macros.h>
@@ -49,7 +46,7 @@ typedef struct SPICE_ATTR_PACKED {
 } uint32_unaligned_t;
 #include <spice/end-packed.h>
 
-#define read_uint32_be(ptr) ntohl(((uint32_unaligned_t *)(ptr))->v)
+#define READ_UINT32_BE(ptr) GUINT32_FROM_BE(((uint32_unaligned_t *)(ptr))->v)
 
 #define ROUND(_x) ((int)floor((_x) + 0.5))
 
@@ -585,7 +582,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             goto format_error;
         }
         // Read next compressed block
-        enc_size = read_uint32_be(data);
+        enc_size = READ_UINT32_BE(data);
         data += 4;
         /* check overflow. This check is a bit different to avoid
          * possible overflows. From previous check data_end - data cannot overflow.
