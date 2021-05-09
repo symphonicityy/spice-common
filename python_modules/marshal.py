@@ -79,11 +79,11 @@ class RootMarshallingSource(MarshallingSource):
             writer.begin_block()
             scope = writer.get_subwriter()
 
-        scope.variable_def(self.c_type + " *", self.base_var)
+        scope.variable_def("const " + self.c_type + " *", self.base_var)
         if not self.reuse_scope:
             scope.newline()
 
-        writer.assign(self.base_var, "(%s *)%s" % (self.c_type, self.pointer))
+        writer.assign(self.base_var, "(const %s *)%s" % (self.c_type, self.pointer))
         writer.newline()
 
         if self.reuse_scope:
@@ -134,10 +134,11 @@ def write_marshal_ptr_function(writer, target_type, is_helper=True):
     writer.header = header
     writer.out_prefix = ""
     if target_type.is_array():
-        scope = writer.function(marshal_function, "SPICE_GNUC_UNUSED static void", "SpiceMarshaller *m, %s_t *ptr, unsigned count" % target_type.element_type.primitive_type() + names_args)
+        scope = writer.function(marshal_function, "SPICE_GNUC_UNUSED static void",
+                                "SpiceMarshaller *m, const %s_t *ptr, unsigned count" % target_type.element_type.primitive_type() + names_args)
     else:
-        scope = writer.function(marshal_function, "void", "SpiceMarshaller *m, %s *ptr" % target_type.c_type() + names_args)
-        header.writeln("void " + marshal_function + "(SpiceMarshaller *m, %s *msg" % target_type.c_type() + names_args + ");")
+        scope = writer.function(marshal_function, "void", "SpiceMarshaller *m, const %s *ptr" % target_type.c_type() + names_args)
+        header.writeln("void " + marshal_function + "(SpiceMarshaller *m, const %s *msg" % target_type.c_type() + names_args + ");")
     scope.variable_def("SPICE_GNUC_UNUSED SpiceMarshaller *", "m2")
 
     for n in names:
@@ -195,10 +196,10 @@ def write_array_marshaller(writer, member, array, container_src, scope):
 
     if not scope.variable_defined(element):
         if array.has_attr("ptr_array"):
-            stars = " **"
+            type_formart = "%s * const *"
         else:
-            stars = " *"
-        scope.variable_def(element_type.c_type() + stars, element)
+            type_formart = "const %s * "
+        scope.variable_def(type_formart % element_type.c_type(), element)
     element_array = element
     if array.has_attr("ptr_array"):
         element = "*" + element
@@ -342,13 +343,13 @@ def write_message_marshaller(writer, message, private):
             #matches "msgc" and appends "msg_" if this fails causing
             #inconsistencies
             message_name = "msg_" + message_name
-        writer.header.writeln("void (*" + message_name + ")(SpiceMarshaller *m, %s *msg" % message.c_type() + names_args + ");")
+        writer.header.writeln("void (*" + message_name + ")(SpiceMarshaller *m, const %s *msg" % message.c_type() + names_args + ");")
     else:
-        writer.header.writeln("void " + function_name + "(SpiceMarshaller *m, %s *msg" % message.c_type() + names_args + ");")
+        writer.header.writeln("void " + function_name + "(SpiceMarshaller *m, const %s *msg" % message.c_type() + names_args + ");")
 
     scope = writer.function(function_name,
                             "static void" if private else "void",
-                            "SPICE_GNUC_UNUSED SpiceMarshaller *m, SPICE_GNUC_UNUSED %s *msg" % message.c_type() + names_args)
+                            "SPICE_GNUC_UNUSED SpiceMarshaller *m, SPICE_GNUC_UNUSED const %s *msg" % message.c_type() + names_args)
     scope.variable_def("SPICE_GNUC_UNUSED SpiceMarshaller *", "m2")
 
     for n in names:
