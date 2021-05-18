@@ -42,7 +42,8 @@ if spice_common_generate_client_code or spice_common_generate_server_code
         '-H',
         '@INPUT@', '@OUTPUT@'
       ]],
-      ['test_demarshallers', test_proto, 'generated_test_demarshallers.c', [
+      ['test_demarshallers', test_proto,
+        ['generated_test_demarshallers.c', 'generated_test_messages.h'], [
         '--suffix=_test',
         '--generate-demarshallers',
         '--client',
