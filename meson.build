@@ -2,7 +2,7 @@
 # project definition
 #
 project('spice-common', 'c',
-        meson_version : '>= 0.48.0',
+        meson_version : '>= 0.49.0',
         license : 'LGPLv2.1',
         default_options : ['warning_level=2'])
 
