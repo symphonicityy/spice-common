@@ -127,7 +127,7 @@ endforeach
 # Python
 if spice_common_generate_client_code or spice_common_generate_server_code
   py_module = import('python')
-  python = py_module.find_installation()
+  python = py_module.find_installation('python3')
 
   if get_option('python-checks')
     foreach module : ['six', 'pyparsing']
