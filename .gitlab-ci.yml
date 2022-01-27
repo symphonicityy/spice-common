@@ -41,6 +41,7 @@ make-win:
   - mkdir spice-protocol/build
   - (cd spice-protocol/build && mingw64-meson --werror && ninja install)
   - NOCONFIGURE=yes ./autogen.sh
+  - export WINEPATH='Z:\usr\x86_64-w64-mingw32\sys-root\mingw\bin'
   - >
     PYTHON=python3
     CFLAGS='-O2 -pipe -g -fsanitize=address -fno-omit-frame-pointer -Wframe-larger-than=40920'
