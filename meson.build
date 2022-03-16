@@ -134,7 +134,7 @@ if spice_common_generate_client_code or spice_common_generate_server_code
       message('Checking for python module @0@'.format(module))
       cmd = run_command(python, '-c', 'import @0@'.format(module))
       if cmd.returncode() != 0
-        # error('Python module @0@ not found'.format(module))
+        #  error('Python module @0@ not found'.format(module))
       endif
     endforeach
   endif
